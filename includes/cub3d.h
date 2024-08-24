@@ -1,8 +1,8 @@
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# include "/home/mahdi/Schreibtisch/Cub3D/libs/libft/includes/libft.h"
-# include "/home/mahdi/Schreibtisch/Cub3D/libs/minilibx-linux/mlx.h"
+# include "../libs/libft/includes/libft.h"
+# include "../libs/minilibx-linux/mlx.h"
 # include <errno.h>
 # include <fcntl.h>
 # include <math.h>

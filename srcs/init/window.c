@@ -1,4 +1,4 @@
-#include "/home/mahdi/Schreibtisch/Cub3D/includes/cub3d.h"
+#include "../includes/cub3d.h"
 
 
 int	close_window(t_game *game)

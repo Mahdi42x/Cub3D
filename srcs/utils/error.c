@@ -1,4 +1,4 @@
-#include "/home/mahdi/Schreibtisch/Cub3D/includes/cub3d.h"
+#include "../includes/cub3d.h"
 
 void	err(char *str)
 {
