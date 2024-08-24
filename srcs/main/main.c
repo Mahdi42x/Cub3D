@@ -11,6 +11,6 @@ int main(int argc, char **argv)
         init_game(game, argv[1]);
     }
     else
-		err("Error : Invalid arguments\n");
+		    err("Error : Invalid arguments\n");
     return 0;
 }
