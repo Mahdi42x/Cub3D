@@ -16,9 +16,11 @@
 # include <unistd.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
+# include <math.h>
 
-# define SIZE_X 720
-# define SIZE_Y 500
+# define MINIMAP_SCALE 5  // Skalierungsfaktor für die Minimap
+# define SIZE_X 1024
+# define SIZE_Y 512
 
 typedef enum {
     NORTH,
@@ -82,7 +84,9 @@ void    read_map(t_game *game, char *map);
 void	ft_map(t_game *game, char *line, int *i);
 
 void    raycasting(t_game *game);
-int	render(t_game *game);
+void    draw_minimap(t_game *game);
+
+void move_player(int keycode, t_game *game);
 
 void    init_player_direction(t_game *game);
 

@@ -56,10 +56,13 @@ void    init_game(t_game *game,  char *map)
             game->win_x, game->win_y, "CUB3D");
     init_player_direction(game);
     printf("\n%d nummer 3\n", game->player_dir);
+    
+    draw_minimap(game);
+    
     raycasting(game);
-    // minimap(game);
 
     mlx_hook(game->mlx_win, 2, 1L << 0, handle_key, game);
     mlx_hook(game->mlx_win, 17, 0, close_window, game);
+    
     mlx_loop(game->mlx_connection);
 }

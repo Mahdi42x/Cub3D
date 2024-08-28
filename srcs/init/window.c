@@ -14,6 +14,6 @@ int	handle_key(int keycode, t_game *game)
 {
 	if (keycode == 53 || keycode == 27 || keycode == 9 || keycode == 65307)
 		close_window(game);
-	// move_player(keycode, game);
+	move_player(keycode, game);
 	return (0);
 }
