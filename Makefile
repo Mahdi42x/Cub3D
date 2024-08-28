@@ -2,21 +2,23 @@ NAME = cub3d
 
 CC = cc
 
-CFLAGS = -Wall -Werror -Wextra -Imlx -g
+CFLAGS = -Wall -Werror -Wextra -Imlx -g -I./includes
 
 MLXFLAGS = -L ./libs/minilibx-linux -lmlx -lXext -lX11
 
 LIBS = -L ./libs/libft -lft
 
 MAIN = main
-INIT = init window
+INIT = init window minimap
+PARSING = read_map
+MOVEMENT = raycasting
 UTILS = error check
-# EXEC = bin builtin exec bin_help
-# BUILTINS = env export export2 exit cd echo pwd unset
 # TOOLS = free parsing parsing2 type token fd expansions
 
 SRCS = $(addsuffix .c, $(addprefix srcs/main/, $(MAIN))) \
 	   $(addsuffix .c, $(addprefix srcs/init/, $(INIT))) \
+	   $(addsuffix .c, $(addprefix srcs/parsing/, $(PARSING))) \
+	   $(addsuffix .c, $(addprefix srcs/movement/, $(MOVEMENT))) \
 	   $(addsuffix .c, $(addprefix srcs/utils/, $(UTILS))) \
 
 OBJS = $(SRCS:.c=.o)

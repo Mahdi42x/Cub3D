@@ -2,6 +2,6 @@
 
 void    raycasting(t_game *game)
 {
-    (void)game;
-    printf("\nRaycasting\n");
+   (void)game;
+   printf("Raycasting\n");
 }
