@@ -48,6 +48,7 @@ void   init_struct(t_game *game, char *map)
 
 void    init_game(t_game *game,  char *map)
 {   
+    (void) map;
     game->mlx_connection = mlx_init();
     printf("\n%d nummer 1\n", game->player_dir);
     printf("\n%d nummer 2\n", game->player_dir);
@@ -58,7 +59,6 @@ void    init_game(t_game *game,  char *map)
     raycasting(game);
     // minimap(game);
 
-    mlx_loop_hook(game->mlx_connection, &render, game);
     mlx_hook(game->mlx_win, 2, 1L << 0, handle_key, game);
     mlx_hook(game->mlx_win, 17, 0, close_window, game);
     mlx_loop(game->mlx_connection);
