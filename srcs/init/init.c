@@ -50,7 +50,6 @@ void    init_game(t_game *game,  char *map)
 {   
     game->mlx_connection = mlx_init();
     printf("\n%d nummer 1\n", game->player_dir);
-    read_map(game, map);
     printf("\n%d nummer 2\n", game->player_dir);
     game->mlx_win = mlx_new_window(game->mlx_connection,
             game->win_x, game->win_y, "CUB3D");
