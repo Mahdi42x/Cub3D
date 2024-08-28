@@ -29,12 +29,12 @@ $(NAME): $(OBJS)
 	@echo "\n"
 	@make -C ./libs/minilibx-linux
 	@make -C ./libs/libft
-	@echo "\033[0;32mCompiling so_long..."
+	@echo "\033[0;32mCompiling cub3d..."
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBS) $(MLXFLAGS)
 	@echo "\n\033[0mDone!"
 
 %.o: %.c
-	@printf "\033[0;33mGenerating so_long objects... %-33.33s\r" $@
+	@printf "\033[0;33mGenerating cub3d objects... %-33.33s\r" $@
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
