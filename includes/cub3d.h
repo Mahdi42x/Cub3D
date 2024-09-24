@@ -29,13 +29,28 @@ typedef enum {
     WEST
 } t_direction;
 
+typedef struct s_map
+{
+	char	**map;
+	char	*no;
+	char	*so;
+	char	*we;
+	char	*ea;
+	int		*c;
+	int		*f;
+	int		fd;
+	int		flag;
+	double	width;
+	double	height;
+	char	map_face;
+	double	map_px;
+	double	map_py;
+}	t_map;
 
 typedef struct s_game
 {
 	void		*mlx_connection;
 	void		*mlx_win;
-    int         win_x;
-    int         win_y;
 	
     char        **layout;
     int         player_x;
@@ -44,59 +59,36 @@ typedef struct s_game
     int        map_width;
     int        map_height;
 
-    double      pos_x;            // X-Position des Spielers in der Welt
-    double      pos_y;            // Y-Position des Spielers in der Welt
-    double      dir_x;            // X-Komponente der Blickrichtung des Spielers
+	double      dir_x;            // X-Komponente der Blickrichtung des Spielers
     double      dir_y;            // Y-Komponente der Blickrichtung des Spielers
     double      plane_x;          // X-Komponente der Kameraebene (für FOV)
     double      plane_y;          // Y-Komponente der Kameraebene (für FOV)
-    
-    double      camera_y;         // Y-Koordinate der Kamera in der Welt
-    double      camera_x;         // X-Koordinate der Kamera in der Welt
-    double      ray_dir_x;        // X-Komponente der Richtung des Strahls
-    double      ray_dir_y;        // Y-Komponente der Richtung des Strahls
-    double      delta_dist_x;     // Länge des Strahls von einer X-Seite zur nächsten
-    double      delta_dist_y;     // Länge des Strahls von einer Y-Seite zur nächsten
-    double      side_dist_x;      // Länge des Strahls von der aktuellen Position zur nächsten X-Seite
-    double      side_dist_y;      // Länge des Strahls von der aktuellen Position zur nächsten Y-Seite
-    double      step_x;           // Schrittweite in X-Richtung
-    double      step_y;           // Schrittweite in Y-Richtung
-    int      map_x;            // X-Koordinate der aktuellen Zelle in der Karte
-    int      map_y;            // Y-Koordinate der aktuellen Zelle in der Karte
-    double      wall_dist;        // Abstand zur Wand
-    int         wall_side;        // Seite der Wand (0 = X, 1 = Y)
-    double      perpwalldist;     // Entfernung zur Wand
 
-    int		rgb_floor[3];
-	int		rgb_sky[3];
-
-
-    t_direction player_dir;
-    int     fd;
+	t_map		map;
+    t_direction	player_dir;
 }	t_game;
 
+void	init_struct(t_game *game, char *map);
+void	init_game(t_game *game,  char *map);
 
-
-void    init_struct(t_game *game, char *map);
-void    init_game(t_game *game,  char *map);
-
-void    read_map(t_game *game, char *map);
+void	read_map(t_game *game, char *map);
 void	ft_map(t_game *game, char *line, int *i);
 
-void    raycasting(t_game *game);
-void    draw_minimap(t_game *game);
+void	raycasting(t_game *game);
+void	draw_map(t_game *game);
+void	draw_minimap(t_game *game);
 
-void move_player(int keycode, t_game *game);
+void	move_player(int keycode, t_game *game);
 
-void    init_player_direction(t_game *game);
+void	init_player_direction(t_game *game);
 
 
 void	open_window(t_game *game);
-int     handle_key(int keycode, t_game *game);
-int     close_window(t_game *game);
+int		handle_key(int keycode, t_game *game);
+int		close_window(t_game *game);
 
 void	err(char *str);
-int     check_format(char *str, char *check);
+int		check_format(char *str, char *check);
 
 
 #endif

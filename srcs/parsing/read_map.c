@@ -8,8 +8,8 @@
 // 	char	*line;
 
 // 	i = 0;
-// 	game->fd = open(argv, O_RDONLY);
-// 	if (game->fd < 0)
+// 	game->map.fd = open(argv, O_RDONLY);
+// 	if (game->map.fd < 0)
 // 		err("Error: Unable to open the map file\n");
 
 // 	// Initialisiere die Liste für die Karte
@@ -68,15 +68,15 @@ void read_map(t_game *game, char *argv)
     char *line;
 
     i = 0;
-    game->fd = open(argv, O_RDONLY);
-    if (game->fd < 0)
+    game->map.fd = open(argv, O_RDONLY);
+    if (game->map.fd < 0)
         err("Error: Unable to open the map file\n");
 
     // Initialisiere die Liste für die Karte
     game->layout = NULL;
 
     // Lese die Datei Zeile für Zeile ein
-    while ((line = get_next_line(game->fd)) != NULL)
+    while ((line = get_next_line(game->map.fd)) != NULL)
     {
         // Füge die gelesene Zeile zur Karte hinzu
         game->layout = realloc(game->layout, sizeof(char *) * (i + 1));
@@ -121,7 +121,7 @@ void read_map(t_game *game, char *argv)
     // Setze die Höhe der Karte
     game->map_height = i;
 
-    close(game->fd);
+    close(game->map.fd);
 
     // Setze die Breite der Karte
     if (game->map_height > 0)

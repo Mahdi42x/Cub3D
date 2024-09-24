@@ -1,6 +1,6 @@
 #include "../includes/cub3d.h"
 
-void    raycasting(t_game *game)
+void	raycasting(t_game *game)
 {
    (void)game;
    printf("Raycasting\n");

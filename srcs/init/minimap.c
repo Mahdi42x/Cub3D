@@ -1,16 +1,24 @@
 #include "../includes/cub3d.h"
-
 void draw_minimap(t_game *game)
 {
     int x, y;
     int color;
-    int border_thickness = 2; // Dicke der Umrandungslinie
-    int pixel_size = 5;  // Größe jedes "Pixels" auf der Minimap
+    int border_thickness = 1;  // Dicke der Umrandungslinie
 
     // Position der Minimap im Fenster
     int minimap_offset_x = 10;
     int minimap_offset_y = 10;
 
+    // Berechne den dynamischen Skalierungsfaktor, damit die Minimap die linke Hälfte einnimmt
+    int minimap_width = SIZE_X / 2 - 2 * minimap_offset_x;  // Minimap soll die linke Hälfte einnehmen
+    int minimap_height = SIZE_Y - 2 * minimap_offset_y;     // Höhe bleibt gleich
+
+    // Skalierungsfaktor basierend auf der Kartengröße und der zur Verfügung stehenden Minimap-Breite
+    int pixel_size_x = minimap_width / game->map_width;
+    int pixel_size_y = minimap_height / game->map_height;
+    int pixel_size = (pixel_size_x < pixel_size_y) ? pixel_size_x : pixel_size_y - 2;  // Wähle den kleineren Wert, um Verzerrungen zu vermeiden
+
+    // Zeichne die Minimap
     y = 0;
     while (y < game->map_height)
     {
@@ -23,7 +31,7 @@ void draw_minimap(t_game *game)
             else if (game->layout[y][x] == '0')  // Leerer Raum
                 color = 0x000000;  // Schwarz
             else if (game->layout[y][x] == ' ')
-                color = 0x000000;  // Standardfarbe für andere Zeichen
+                color = 0x000000;  // Standardfarbe für leere Zeichen
 
             // Zeichne ein Quadrat für jedes "Pixel" auf der Minimap
             int px, py;
@@ -40,7 +48,6 @@ void draw_minimap(t_game *game)
                 }
                 py++;
             }
-
             x++;
         }
         y++;
@@ -65,8 +72,6 @@ void draw_minimap(t_game *game)
     }
 
     // Zeichne die rote Umrandung
-    int minimap_width = game->map_width * pixel_size;
-    int minimap_height = game->map_height * pixel_size;
     int border_color = 0xFF0000;  // Rot
 
     // Obere und untere Grenze
@@ -95,5 +100,3 @@ void draw_minimap(t_game *game)
         y++;
     }
 }
-
-
