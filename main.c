@@ -1,77 +1,9 @@
-/*
-** cub3D Project Implementation with MiniLibX
-**
-** Full implementation of the project, including map parsing, raycasting, player movement, and a minimap.
-*/
+#include "include/cub3D.h"
 
-#include "include/mlx.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
+// void parse_map(t_data *data, int cub)
+// {
 
-#define WINDOW_WIDTH 1200
-#define WINDOW_HEIGHT 900
-#define TILE_SIZE 64
-#define PLAYER_SPEED 0.2
-#define PLAYER_ROT_SPEED 0.05
-#define MAP_WIDTH 10
-#define MAP_HEIGHT 10
-
-
-char *map[MAP_HEIGHT] = {
-    "1111111111",
-    "1010000001",
-    "1010000001",
-    "1010011111",
-    "1000000001",
-    "1111100001", // Place the player in the middle
-    "1000000001",
-    "1000010001",
-    "1000010001",
-    "1111111111",
-};
-
-typedef struct s_player {
-    double x;
-    double y;
-    double dir_x;
-    double dir_y;
-    double plane_x;
-    double plane_y;
-} t_player;
-
-typedef struct s_data {
-    void *mlx;
-    void *win;
-    t_player player;
-    int **buffer;
-} t_data;
-
-/* Key bindings */
-#define KEY_W 119
-#define KEY_A 97
-#define KEY_S 115
-#define KEY_D 100
-#define KEY_LEFT 65363
-#define KEY_RIGHT 65361
-#define KEY_UP 65362
-#define KEY_DOWN 65364
-#define KEY_ESC 65307
-
-/* Function prototypes */
-void init_player(t_player *player);
-int handle_keypress(int key, t_data *data);
-void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixel);
-int render(void *param);
-int world_map(int x, int y);
-void move_player(t_data *data, int key);
-void rotate_player(t_data *data, int key);
-void put_pixel_to_image(char *img_data, int x, int y, int color, int line_length, int bits_per_pixel);
-void draw_minimap(t_data *data, char *img_data, int line_length, int bits_per_pixel);
-int world_map(int x, int y);
+// }
 
 
 void set_player_orientation(char direction, t_player *player) {
@@ -335,32 +267,83 @@ int render(void *param) {
     return (0);
 }
 
-int main(void) {
-    t_data data;
+int	is_cub_file(char *file_path)
+{
+	size_t	length;
 
+	length = strlen(file_path);
+	if (length >= 4)
+	{
+		if (strncmp(file_path + length - 4, ".cub", 4) == 0)
+		{
+			printf("map selected!\n");
+			return (1);
+		}
+	}
+	printf("The map does not have the correct ending '.cub'\n");
+	return (0);
+}
+int main(int argc, char *argv[])
+{
+    t_data data;
+    int fd;
+
+    // Überprüfen, ob die Argumente korrekt sind
+    if (argc != 2 || !is_cub_file(argv[1]))
+    {
+        printf("try: %s <map.cub>\n", argv[0]);
+        return (1);
+    }
+
+    // Öffnen der .cub-Datei
+    fd = open(argv[1], O_RDONLY);
+    if (fd == -1)
+    {
+        perror("Fehler beim Öffnen der Datei");
+        return (1);
+    }
+
+    // Map parsen und in data speichern
+    parse_map(&data, fd);
+    close(fd); // Datei nach dem Parsen schließen
+
+    // MiniLibX initialisieren
     data.mlx = mlx_init();
-    if (!data.mlx) {
+    if (!data.mlx)
+    {
         fprintf(stderr, "Error: Failed to initialize MiniLibX.\n");
         return (1);
     }
+
+    // Erstellen eines Fensters
     data.win = mlx_new_window(data.mlx, WINDOW_WIDTH, WINDOW_HEIGHT, "cub3D");
-    if (!data.win) {
+    if (!data.win)
+    {
         fprintf(stderr, "Error: Failed to create a window.\n");
         return (1);
     }
+
+    // Spieler initialisieren
     init_player(&data.player);
 
-    // Lock and hide the mouse at the start
+    // Maus sperren und verbergen zu Beginn
     mlx_mouse_hide(data.mlx, data.win);
     mlx_mouse_move(data.mlx, data.win, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
 
-    // Hook events for keyboard and mouse
-    mlx_hook(data.win, 2, 1L << 0, handle_keypress, &data); // Key press
-    mlx_hook(data.win, 6, 1L << 6, handle_mouse, &data);    // Mouse move
+    // Events für Tastatur und Maus festlegen
+    mlx_hook(data.win, 2, 1L << 0, handle_keypress, &data); // Tastendruck
+    mlx_hook(data.win, 6, 1L << 6, handle_mouse, &data);    // Mausbewegung
 
-    // Render loop
+    // Render-Schleife
     mlx_loop_hook(data.mlx, render, &data);
     mlx_loop(data.mlx);
+
+    // Speicher für die Map nach der Verwendung freigeben
+    for (int i = 0; data.map[i] != NULL; i++)
+    {
+        free(data.map[i]);
+    }
+    free(data.map);
 
     return (0);
 }
