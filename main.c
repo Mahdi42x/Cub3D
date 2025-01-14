@@ -1,107 +1,122 @@
 #include "include/cub3D.h"
 
-// void parse_map(t_data *data, int cub)
+// void print_data_textures(t_data *data)
 // {
+//     // Ausgabe der Texturpfade
+//     if (data->north_texture != NULL) {
+//         printf("North Texture: %s", data->north_texture);
+//     } else {
+//         printf("North Texture: Not Set\n");
+//     }
 
+//     if (data->south_texture != NULL) {
+//         printf("South Texture: %s", data->south_texture);
+//     } else {
+//         printf("South Texture: Not Set\n");
+//     }
+
+//     if (data->west_texture != NULL) {
+//         printf("West Texture: %s", data->west_texture);
+//     } else {
+//         printf("West Texture: Not Set\n");
+//     }
+
+//     if (data->east_texture != NULL) {
+//         printf("East Texture: %s", data->east_texture);
+//     } else {
+//         printf("East Texture: Not Set\n");
+//     }
 // }
 
-void print_data_textures(t_data *data)
-{
-    // Ausgabe der Texturpfade
-    if (data->north_texture != NULL) {
-        printf("North Texture: %s", data->north_texture);
-    } else {
-        printf("North Texture: Not Set\n");
-    }
+// void print_data_map(t_data *data) {
+//     if (data->map != NULL) {
+//         printf("\nMap:\n");
+//         for (int i = 0; data->map[i] != NULL; i++) {
+//             printf("%s\n", data->map[i]);
+//         }
+//         printf("\n");
+//     } else {
+//         printf("Map: Not Set\n");
+//     }
+// }
 
-    if (data->south_texture != NULL) {
-        printf("South Texture: %s", data->south_texture);
-    } else {
-        printf("South Texture: Not Set\n");
-    }
-
-    if (data->west_texture != NULL) {
-        printf("West Texture: %s", data->west_texture);
-    } else {
-        printf("West Texture: Not Set\n");
-    }
-
-    if (data->east_texture != NULL) {
-        printf("East Texture: %s", data->east_texture);
-    } else {
-        printf("East Texture: Not Set\n");
-    }
-}
-
-void print_data_map(t_data *data)
-{
-    // Ausgabe der Map
-    if (data->map != NULL)
-    {
-        printf("\nMap:\n");
-        for (int i = 0; data->map[i] != NULL; i++)
-        {
-            printf("%s", data->map[i]);
-        }
-        printf("\n");
-    } else {
-        printf("Map: Not Set\n");
-    }
-}
-
-void parse_texture(char **dest, char *line)
-{
-    while (*line && isspace(*line)) // Überspringe Leerzeichen
-        line++;
-    *dest = strdup(line); // Speichere den Pfad
-    if (*dest == NULL) {
-        perror("Error");
+void load_weapon_texture(t_data *data, char *path) {
+    data->weapon_texture.img = mlx_xpm_file_to_image(data->mlx, path, &data->weapon_texture.width, &data->weapon_texture.height);
+    if (!data->weapon_texture.img) {
+        perror("System Error");
+        fprintf(stderr, "MiniLibX Error: Failed to load weapon texture at path: %s\n", path);
         exit(EXIT_FAILURE);
     }
+    data->weapon_texture.addr = mlx_get_data_addr(
+        data->weapon_texture.img,
+        &data->weapon_texture.bpp,
+        &data->weapon_texture.line_length,
+        &data->weapon_texture.endian
+    );
+}
+
+void load_texture(t_data *data, t_texture *texture, char *line) {
+    // Skip leading spaces
+    while (*line && isspace(*line))
+        line++;
+
+    // Remove trailing newline or spaces
+    char *newline = strchr(line, '\n');
+    if (newline)
+        *newline = '\0';
+
+    printf("🔍 Loading sanitized texture path: '%s'\n", line);
+
+    // Load the texture
+    texture->img = mlx_xpm_file_to_image(data->mlx, line, &texture->width, &texture->height);
+    if (!texture->img) {
+        perror("System Error");
+        fprintf(stderr, "MiniLibX Error: Failed to load texture at path: %s\n", line);
+        exit(EXIT_FAILURE);
+    }
+
+    texture->addr = mlx_get_data_addr(texture->img, &texture->bpp, &texture->line_length, &texture->endian);
 }
 
 char **parse_map(int fd) {
     char **map = NULL;
-    char *line;
+    char *line = NULL;
     int rows = 0;
-    int start_parsing = 0;  // Variable, um zu verfolgen, wann die Map zu parsen beginnt
 
     while ((line = get_next_line(fd)) != NULL) {
-        // Ignoriere Zeilen, die vor der Map sind
-        if (start_parsing == 0) {
-            // Prüfen, ob nach der "C"-Zeile oder der 8. Zeile die Map beginnt
-            if (strncmp(line, "C ", 2) == 0 || *line == '\0') {
-                start_parsing = 1;  // Map ab der nächsten Zeile parsen
-            }
+        // Skip leading empty lines only before the map starts
+        if (rows == 0 && strspn(line, " \n") == strlen(line)) {
+            free(line);
+            continue;
         }
-        
-        // Ab hier wird die Map geparst, es dürfen keine leeren Zeilen mehr vor der Map kommen
-        if (start_parsing == 1 && line[0] != '\0') {
-            map = realloc(map, sizeof(char *) * (rows + 1));
-            if (map == NULL) {
-                perror("Error");
-                exit(EXIT_FAILURE);
-            }
-            map[rows++] = strdup(line);  // Die Zeile zur Map hinzufügen
-        } else if (*line == '\0' && rows > 0) {
-            // Stoppt das Parsen der Map, wenn eine leere Zeile kommt, aber sicherstellen, dass es nicht zu früh ist
-            break;
+
+        // Preserve exact line formatting, including leading/trailing spaces
+        size_t len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
         }
-        
-        free(line);  // Zeile nach Gebrauch freigeben
-    }
 
-    // NULL-Terminierung der Map
-    map = realloc(map, sizeof(char *) * (rows + 1));
-    if (map == NULL) {
-        perror("Error");
-        exit(EXIT_FAILURE);
-    }
-    map[rows] = NULL;
+        // Allocate memory for each new map line
+        char **new_map = realloc(map, sizeof(char *) * (rows + 2));
+        if (new_map == NULL) {
+            perror("Error reallocating map");
+            exit(EXIT_FAILURE);
+        }
+        map = new_map;
 
+        // Store the line exactly as it appears
+        map[rows] = strdup(line);
+        if (map[rows] == NULL) {
+            perror("Error duplicating line");
+            exit(EXIT_FAILURE);
+        }
+        rows++;
+        map[rows] = NULL;  // Null-terminate the array
+
+        free(line);
+    }
     return map;
 }
-
 
 int parse_color(char *str, int i)
 {
@@ -127,175 +142,183 @@ int parse_color(char *str, int i)
     return (r << 16) | (g << 8) | b;
 }
 
-char **parse_map_from_line(char *first_map_line, int fd) {
+char **parse_map_from_line(char *first_map_line, int fd, t_data *data) {
     char **map = NULL;
     char *line = first_map_line;
     int rows = 0;
 
     while (line != NULL) {
-        if (*line == '1') { // Map-Zeilen beginnen mit '1'
-            map = realloc(map, sizeof(char *) * (rows + 1));
-            if (map == NULL) {
-                perror("Error");
-                exit(EXIT_FAILURE);
-            }
-            map[rows++] = strdup(line);
-        } else {
-            break; // Stoppe, wenn eine ungültige Zeile auftaucht
+        size_t len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
         }
+
+        // Allocate memory for the new map row
+        char **new_map = realloc(map, sizeof(char *) * (rows + 2));
+        if (new_map == NULL) {
+            perror("Error reallocating map");
+            exit(EXIT_FAILURE);
+        }
+        map = new_map;
+
+        map[rows] = strdup(line);
+        if (map[rows] == NULL) {
+            perror("Error duplicating line");
+            exit(EXIT_FAILURE);
+        }
+
+        // Find player position during parsing
+        for (int x = 0; map[rows][x]; x++) {
+		    char c = map[rows][x];
+		    if (c == 'N' || c == 'S' || c == 'E' || c == 'W') {
+		        data->player.x = x + 0.5;
+		        data->player.y = rows + 0.5;
+		        set_player_orientation(c, &data->player);
+		        map[rows][x] = '0';  // Replace with empty space
+		    }
+		}
+
+        rows++;
+        map[rows] = NULL;  // Null-terminate the array
+
         free(line);
         line = get_next_line(fd);
     }
 
-    // NULL-Terminierung der Map
-    map = realloc(map, sizeof(char *) * (rows + 1));
-    if (map == NULL) {
-        perror("Error");
-        exit(EXIT_FAILURE);
-    }
-    map[rows] = NULL;
-
     return map;
 }
-
-void parse_player(t_data *data) {
-    int row = 0;
-
-    // Durchlaufe alle Zeilen der Map
-    while (data->map[row] != NULL) {
-        int col = 0;
-        // Durchlaufe jede Spalte der aktuellen Zeile
-        while (data->map[row][col] != '\0') {
-            // Überprüfe auf die verschiedenen Spielerorientierungen (N, S, E, O)
-            if (data->map[row][col] == 'N' || data->map[row][col] == 'S' || 
-                data->map[row][col] == 'E' || data->map[row][col] == 'O') {
-
-                // Speichere die Position des Spielers
-                data->player_x = row;  // Zeilenposition des Spielers
-                data->player_y = col;  // Spaltenposition des Spielers
-                data->player_orientation = data->map[row][col];  // Orientierung des Spielers (N, S, E, O)
-
-                // Optional: Spielerzeichen durch '0' ersetzen, um es aus der Map zu entfernen
-                data->map[row][col] = '0';
-
-                return;  // Spieler gefunden, also keine weiteren Zeilen durchsuchen
-            }
-            col++;  // Nächste Spalte
-        }
-        row++;  // Nächste Zeile
-    }
-
-    // Falls kein Spielerzeichen gefunden wurde, gib eine Fehlermeldung aus
-    fprintf(stderr, "Error: No player found in the map.\n");
-    exit(EXIT_FAILURE);
-}
-
 
 void parse_cub_file(t_data *data, const char *file_path) {
     int fd = open(file_path, O_RDONLY);
     if (fd == -1) {
-        perror("Error");
+        perror("Error opening file");
         exit(EXIT_FAILURE);
     }
 
     char *line;
-    while ((line = get_next_line(fd)) != NULL)
-    {
+    while ((line = get_next_line(fd)) != NULL) {
         if (strncmp(line, "NO ", 3) == 0) {
-            parse_texture(&data->north_texture, line + 3);
+            load_texture(data, &data->textures[0], line + 3);  // North
         } else if (strncmp(line, "SO ", 3) == 0) {
-            parse_texture(&data->south_texture, line + 3);
+            load_texture(data, &data->textures[1], line + 3);  // South
         } else if (strncmp(line, "WE ", 3) == 0) {
-            parse_texture(&data->west_texture, line + 3);
+            load_texture(data, &data->textures[2], line + 3);  // West
         } else if (strncmp(line, "EA ", 3) == 0) {
-            parse_texture(&data->east_texture, line + 3);
+            load_texture(data, &data->textures[3], line + 3);  // East
         } else if (strncmp(line, "F ", 2) == 0) {
             data->floor_color = parse_color(line + 2, 0);
         } else if (strncmp(line, "C ", 2) == 0) {
             data->ceiling_color = parse_color(line + 2, 1);
-        } else if (*line == '1') { // Map beginnt
-            data->map = parse_map_from_line(line, fd);
-            break; // Map ist vollständig verarbeitet
-        } else {
-            free(line); // Zeile freigeben, wenn sie keine Relevanz hat
+        } else if (*line == '1' || *line == '0' || *line == ' ') {
+            data->map = parse_map_from_line(line, fd, data);
+            break;
         }
+        free(line);
     }
 
-    // Nach dem Parsen der Map, Spieler positionieren
-    parse_player(data);
-
-    print_data_map(data);
-    printf("\n");
-    print_data_textures(data);
-    printf("Player position: (%d, %d) facing '%c'\n", data->player_x, data->player_y, data->player_orientation);
     close(fd);
+
+    // Ensure the map was loaded before calculating map width
+    if (data->map == NULL) {
+        fprintf(stderr, "Error: Map data is missing in the .cub file.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Calculate the map width after loading the map
+    int map_width = 0;
+    for (int i = 0; data->map[i]; i++) {
+        int len = strlen(data->map[i]);
+        if (len > map_width)
+            map_width = len;
+    }
+    data->map_width = map_width;
 }
 
 void set_player_orientation(char direction, t_player *player) {
     if (direction == 'N') {
         player->dir_x = 0;
         player->dir_y = -1;
+        player->plane_x = 0.66;
+        player->plane_y = 0;
     } else if (direction == 'S') {
         player->dir_x = 0;
         player->dir_y = 1;
+        player->plane_x = -0.66;
+        player->plane_y = 0;
     } else if (direction == 'E') {
         player->dir_x = 1;
         player->dir_y = 0;
+        player->plane_x = 0;
+        player->plane_y = 0.66;
     } else if (direction == 'W') {
         player->dir_x = -1;
         player->dir_y = 0;
+        player->plane_x = 0;
+        player->plane_y = -0.66;
     }
 }
+
 
 void find_player(char **map, t_player *player) {
     for (int y = 0; map[y]; y++) {
         for (int x = 0; map[y][x]; x++) {
             if (map[y][x] == 'N' || map[y][x] == 'S' || map[y][x] == 'E' || map[y][x] == 'W') {
-                player->x = x + 0.5;  // Center of the block
+                player->x = x + 0.5;  // Center the player in the tile
                 player->y = y + 0.5;
                 set_player_orientation(map[y][x], player);
-                map[y][x] = '0'; // Replace with empty space
+                map[y][x] = '0';  // Replace with empty space
                 return;
             }
         }
     }
 }
 
-/* Initialize player data */
-void init_player(t_player *player) {
-    player->x = 1.1; // Match the open area in the map
-    player->y = 1.1;
-    player->dir_x = -1;
-    player->dir_y = 0;
-    player->plane_x = 0;
-    player->plane_y = 0.66;
+int handle_focus(int event, void *param) {
+    t_data *data = (t_data *)param;
+
+    if (event == 9) {  // FocusIn
+        printf("Window focused.\n");
+        // Re-center the mouse when window regains focus
+        mlx_mouse_move(data->mlx, data->win, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+    } else if (event == 10) {  // FocusOut
+        printf("Window lost focus.\n");
+    }
+
+    return (0);
 }
 
 int handle_mouse(int x, __attribute__((unused)) int y, t_data *data) {
     static int center_x = WINDOW_WIDTH / 2;
-    // Lock the mouse to the center of the window
+
+    if (x == center_x) 
+        return (0);
+
     mlx_mouse_move(data->mlx, data->win, center_x, WINDOW_HEIGHT / 2);
-    // Calculate horizontal movement
+
     int delta_x = x - center_x;
-    double rot = -delta_x * 0.001; // Adjust sensitivity for smooth rotation
+    double rot = delta_x * 0.001;  // Inverted rotation direction
+
     t_player *player = &data->player;
-    // Rotate the player's direction
+
     double old_dir_x = player->dir_x;
     double old_plane_x = player->plane_x;
+
+    // Corrected rotation direction
     player->dir_x = player->dir_x * cos(rot) - player->dir_y * sin(rot);
     player->dir_y = old_dir_x * sin(rot) + player->dir_y * cos(rot);
-    // Rotate the player's camera plane
+
     player->plane_x = player->plane_x * cos(rot) - player->plane_y * sin(rot);
     player->plane_y = old_plane_x * sin(rot) + player->plane_y * cos(rot);
-    // Update player's angle
-    player->angle -= rot;
-    // Keep angle within 0 to 2*PI
+
+    player->angle += rot;
     if (player->angle < 0)
         player->angle += 2 * M_PI;
     else if (player->angle >= 2 * M_PI)
         player->angle -= 2 * M_PI;
+
     return (0);
 }
+
 /* Handle keyboard input */
 int handle_keypress(int key, t_data *data) {
     if (key == KEY_ESC) {
@@ -313,7 +336,6 @@ void move_player(t_data *data, int key) {
     t_player *player = &data->player;
     double move_x = 0.0;
     double move_y = 0.0;
-
     // Handle forward/backward movement
     if (key == KEY_W || key == KEY_UP) {
         move_x += player->dir_x * PLAYER_SPEED;
@@ -323,7 +345,6 @@ void move_player(t_data *data, int key) {
         move_x -= player->dir_x * PLAYER_SPEED;
         move_y -= player->dir_y * PLAYER_SPEED;
     }
-
     // Handle strafing left/right
     if (key == KEY_A) {
         move_x -= player->plane_x * PLAYER_SPEED;
@@ -333,12 +354,14 @@ void move_player(t_data *data, int key) {
         move_x += player->plane_x * PLAYER_SPEED;
         move_y += player->plane_y * PLAYER_SPEED;
     }
-
     // Check for collisions and update position
-    if (world_map((int)(player->x + move_x), (int)(player->y)) == 0)
-        player->x += move_x;
-    if (world_map((int)(player->x), (int)(player->y + move_y)) == 0)
-        player->y += move_y;
+    if (!world_map(data, (int)(player->x + move_x), (int)(player->y))) {
+    	player->x += move_x;
+	}
+	if (!world_map(data, (int)(player->x), (int)(player->y + move_y))) {
+    	player->y += move_y;
+	}
+
 }
 
 /* Rotate the player */
@@ -346,13 +369,15 @@ void rotate_player(t_data *data, int key) {
     t_player *player = &data->player;
     double old_dir_x = player->dir_x;
     double old_plane_x = player->plane_x;
-    double rot = (key == KEY_LEFT ? -PLAYER_ROT_SPEED : PLAYER_ROT_SPEED);
+    double rot = (key == KEY_LEFT ? -PLAYER_ROT_SPEED : PLAYER_ROT_SPEED);  // Inverted rotation
+
     player->dir_x = player->dir_x * cos(rot) - player->dir_y * sin(rot);
     player->dir_y = old_dir_x * sin(rot) + player->dir_y * cos(rot);
+
     player->plane_x = player->plane_x * cos(rot) - player->plane_y * sin(rot);
     player->plane_y = old_plane_x * sin(rot) + player->plane_y * cos(rot);
+
     player->angle += rot;
-    // Keep angle within 0 to 2*PI
     if (player->angle < 0)
         player->angle += 2 * M_PI;
     else if (player->angle >= 2 * M_PI)
@@ -360,13 +385,11 @@ void rotate_player(t_data *data, int key) {
 }
 
 /* Simple map checker */
-int world_map(int x, int y) {
-    // Check bounds first to prevent accessing invalid map positions
-    if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT)
-        return 1;  // Treat out-of-bounds as walls
+int world_map(t_data *data, int x, int y) {
+    if (x < 0 || y < 0 || !data->map || !data->map[y] || x >= (int)strlen(data->map[y]))
+        return 1;  // Out-of-bounds counts as wall
 
-    // Return map value (0 for empty space, 1 for wall)
-    return map[y][x] - '0';
+    return (data->map[y][x] == '1') ? 1 : 0;
 }
 
 /* Put a pixel into the image buffer */
@@ -378,44 +401,44 @@ void put_pixel_to_image(char *img_data, int x, int y, int color, int line_length
 /* Draw a minimap */
 void draw_minimap(t_data *data, char *img_data, int line_length, int bits_per_pixel) {
     int scale = 10;  // Scale of the minimap
+    int radius = 5;  // Radius of the player circle
 
-    // Flip the map vertically by reversing the Y-axis when drawing
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            int color = (map[y][x] == '1') ? 0xFFFFFF : 0x000000;
-
-            // Invert the Y-axis here
-            int flipped_y = (MAP_HEIGHT - 1 - y);
+    // Draw the map
+    for (int y = 0; data->map[y]; y++) {
+        for (int x = 0; data->map[y][x]; x++) {
+            int color = (data->map[y][x] == '1') ? 0xFFFFFF : 0x000000;
 
             for (int i = 0; i < scale; i++) {
                 for (int j = 0; j < scale; j++) {
-                    put_pixel_to_image(img_data, x * scale + i, flipped_y * scale + j, color, line_length, bits_per_pixel);
+                    put_pixel_to_image(img_data, x * scale + i, y * scale + j, color, line_length, bits_per_pixel);
                 }
             }
         }
     }
 
-    // Draw the player as a circle
+    // Draw the player in the correct position
     int player_x = (int)(data->player.x * scale);
-    int player_y = (int)((MAP_HEIGHT - 1 - data->player.y) * scale);  // Invert player's Y-axis
-    int radius = 5;  // Radius of the player circle
+	int player_y = (int)(data->player.y * scale);
+
 
     // Draw the player circle
     for (int dy = -radius; dy <= radius; dy++) {
         for (int dx = -radius; dx <= radius; dx++) {
-            if (dx * dx + dy * dy <= radius * radius) {  // Circle equation
-                put_pixel_to_image(img_data, player_x + dx, player_y + dy, 0xFF0000, line_length, bits_per_pixel);  // Red circle
+            if (dx * dx + dy * dy <= radius * radius) {
+                put_pixel_to_image(img_data, player_x + dx, player_y + dy, 0xFF0000, line_length, bits_per_pixel);
             }
         }
     }
 
-    // Draw the directional tip (small line extending from the circle)
-    double tip_length = 10.0;  // Length of the tip
+    // Draw the directional tip (invert Y-axis to fix minimap direction)
+    double tip_length = 10.0;
     int tip_x = player_x + (int)(tip_length * data->player.dir_x);
-    int tip_y = player_y - (int)(tip_length * data->player.dir_y);  // Invert Y-axis for the tip
+	int tip_y = player_y + (int)(tip_length * data->player.dir_y);
 
-    // Draw the tip as a line from the center of the circle
-    draw_line(img_data, player_x, player_y, tip_x, tip_y, 0xFFFFFF, line_length, bits_per_pixel);  // White tip
+
+
+
+    draw_line(img_data, player_x, player_y, tip_x, tip_y, 0xFFFFFF, line_length, bits_per_pixel);
 }
 
 void draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int line_length, int bits_per_pixel) {
@@ -434,8 +457,7 @@ void draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int li
 
 /* Raycasting implementation */
 void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixel) {
-    int x;
-    for (x = 0; x < WINDOW_WIDTH; x++) {
+    for (int x = 0; x < WINDOW_WIDTH; x++) {
         double camera_x = 2 * x / (double)WINDOW_WIDTH - 1;
         double ray_dir_x = data->player.dir_x + data->player.plane_x * camera_x;
         double ray_dir_y = data->player.dir_y + data->player.plane_y * camera_x;
@@ -443,18 +465,12 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
         int map_x = (int)data->player.x;
         int map_y = (int)data->player.y;
 
-        double side_dist_x;
-        double side_dist_y;
-
+        double side_dist_x, side_dist_y;
         double delta_dist_x = fabs(1 / ray_dir_x);
         double delta_dist_y = fabs(1 / ray_dir_y);
         double perp_wall_dist;
 
-        int step_x;
-        int step_y;
-
-        int hit = 0;
-        int side;
+        int step_x, step_y, hit = 0, side;
 
         if (ray_dir_x < 0) {
             step_x = -1;
@@ -463,6 +479,7 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
             step_x = 1;
             side_dist_x = (map_x + 1.0 - data->player.x) * delta_dist_x;
         }
+
         if (ray_dir_y < 0) {
             step_y = -1;
             side_dist_y = (data->player.y - map_y) * delta_dist_y;
@@ -471,7 +488,7 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
             side_dist_y = (map_y + 1.0 - data->player.y) * delta_dist_y;
         }
 
-        while (hit == 0) {
+        while (!hit) {
             if (side_dist_x < side_dist_y) {
                 side_dist_x += delta_dist_x;
                 map_x += step_x;
@@ -481,37 +498,73 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
                 map_y += step_y;
                 side = 1;
             }
-            if (world_map(map_x, map_y) > 0)
+            if (world_map(data, map_x, map_y))
                 hit = 1;
         }
 
-        if (side == 0)
-            perp_wall_dist = (map_x - data->player.x + (1 - step_x) / 2) / ray_dir_x;
-        else
-            perp_wall_dist = (map_y - data->player.y + (1 - step_y) / 2) / ray_dir_y;
+        perp_wall_dist = (side == 0)
+            ? (map_x - data->player.x + (1 - step_x) / 2) / ray_dir_x
+            : (map_y - data->player.y + (1 - step_y) / 2) / ray_dir_y;
 
         int line_height = (int)(WINDOW_HEIGHT / perp_wall_dist);
         int draw_start = -line_height / 2 + WINDOW_HEIGHT / 2;
-        if (draw_start < 0)
-            draw_start = 0;
+        if (draw_start < 0) draw_start = 0;
         int draw_end = line_height / 2 + WINDOW_HEIGHT / 2;
-        if (draw_end >= WINDOW_HEIGHT)
-            draw_end = WINDOW_HEIGHT - 1;
+        if (draw_end >= WINDOW_HEIGHT) draw_end = WINDOW_HEIGHT - 1;
 
-        // Draw ceiling
+        int tex_num = side == 0 ? (ray_dir_x > 0 ? 0 : 1) : (ray_dir_y > 0 ? 2 : 3);
+        t_texture *tex = &data->textures[tex_num];
+
+        double wall_x = side == 0 ? data->player.y + perp_wall_dist * ray_dir_y
+                                  : data->player.x + perp_wall_dist * ray_dir_x;
+        wall_x -= floor(wall_x);
+
+        int tex_x = (int)(wall_x * tex->width);
+        if ((side == 0 && ray_dir_x > 0) || (side == 1 && ray_dir_y < 0))
+            tex_x = tex->width - tex_x - 1;
+
+        // 🔥 Draw Ceiling
         for (int y = 0; y < draw_start; y++) {
             put_pixel_to_image(img_data, x, y, data->ceiling_color, line_length, bits_per_pixel);
         }
 
-        // Draw floor
+        // 🎨 Draw Wall Texture
+        for (int y = draw_start; y < draw_end; y++) {
+            int d = (y * 256) - (WINDOW_HEIGHT * 128) + (line_height * 128);
+            int tex_y = ((d * tex->height) / line_height) / 256;
+            int color = *(int *)(tex->addr + (tex_y * tex->line_length + tex_x * (tex->bpp / 8)));
+            if (side == 1) color = (color >> 1) & 0x7F7F7F;  // Darken side walls
+            put_pixel_to_image(img_data, x, y, color, line_length, bits_per_pixel);
+        }
+
+        // 🌱 Draw Floor
         for (int y = draw_end; y < WINDOW_HEIGHT; y++) {
             put_pixel_to_image(img_data, x, y, data->floor_color, line_length, bits_per_pixel);
         }
+    }
+}
 
-        // Explicitly define wall color for now (you can add textures here later)
-        int color = (side == 0) ? 0xFF0000 : 0x00FF00;
-        for (int y = draw_start; y < draw_end; y++) {
-            put_pixel_to_image(img_data, x, y, color, line_length, bits_per_pixel);
+void render_weapon(t_data *data, char *img_data, int line_length, int bits_per_pixel) {
+    t_texture *weapon = &data->weapon_texture;
+
+    float weapon_scale = 1.5;  // Adjust this value to control size
+    int weapon_width = weapon->width * weapon_scale;
+    int weapon_height = weapon->height * weapon_scale;
+
+    // 📌 Position the weapon at the bottom-right corner
+    int start_x = WINDOW_WIDTH - weapon_width;  // 20px padding from the right edge
+    int start_y = WINDOW_HEIGHT - weapon_height;  // 20px padding from the bottom edge
+
+    for (int y = 0; y < weapon_height; y++) {
+        for (int x = 0; x < weapon_width; x++) {
+            int tex_x = x * weapon->width / weapon_width;
+            int tex_y = y * weapon->height / weapon_height;
+
+            int color = *(int *)(weapon->addr + (tex_y * weapon->line_length + tex_x * (weapon->bpp / 8)));
+
+            // Skip transparent pixels (assuming transparency is black)
+            if (color != 0x000000)
+                put_pixel_to_image(img_data, start_x + x, start_y + y, color, line_length, bits_per_pixel);
         }
     }
 }
@@ -520,25 +573,25 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
 int render(void *param) {
     t_data *data = (t_data *)param;
 
-    // Declare variables for image properties
     int bits_per_pixel;
     int line_length;
     int endian;
 
-    // Create a new image
     void *img = mlx_new_image(data->mlx, WINDOW_WIDTH, WINDOW_HEIGHT);
     char *img_data = mlx_get_data_addr(img, &bits_per_pixel, &line_length, &endian);
 
-    // Perform raycasting
+    // Render the game world
     raycasting(data, img_data, line_length, bits_per_pixel);
 
-    // Draw the minimap
+    // Draw the minimap (if desired)
     draw_minimap(data, img_data, line_length, bits_per_pixel);
 
-    // Display the image
+    // 🛠️ Render the weapon
+    render_weapon(data, img_data, line_length, bits_per_pixel);
+
+    // Show the image
     mlx_put_image_to_window(data->mlx, data->win, img, 0, 0);
 
-    // Destroy the image to free memory
     mlx_destroy_image(data->mlx, img);
 
     return (0);
@@ -581,7 +634,6 @@ int main(int argc, char *argv[])
         perror("Fehler beim Öffnen der Datei");
         return (1);
     }
-	parse_cub_file(&data, argv[1]);
 
 
     // MiniLibX initialisieren
@@ -591,6 +643,21 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Error: Failed to initialize MiniLibX.\n");
         return (1);
     }
+	int width, height;
+    void *img = mlx_xpm_file_to_image(data.mlx, "/home/emkalkan/42/Cub3D-main/textures/Brick256.xpm", &width, &height);
+
+    if (!img) {
+        perror("System Error");
+        fprintf(stderr, "MiniLibX Error: Cannot load the test texture.\n");
+        exit(EXIT_FAILURE);
+    } else {
+        printf("✅ MiniLibX successfully loaded the test texture!\n");
+        mlx_destroy_image(data.mlx, img);  // Clean up after the test
+    }
+
+	parse_cub_file(&data, argv[1]);
+	load_weapon_texture(&data, "textures/m4default.xpm");
+
 
     // Erstellen eines Fensters
     data.win = mlx_new_window(data.mlx, WINDOW_WIDTH, WINDOW_HEIGHT, "cub3D");
@@ -600,9 +667,6 @@ int main(int argc, char *argv[])
         return (1);
     }
 
-    // Spieler initialisieren
-    init_player(&data.player);
-
     // Maus sperren und verbergen zu Beginn
     mlx_mouse_hide(data.mlx, data.win);
     mlx_mouse_move(data.mlx, data.win, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
@@ -610,6 +674,9 @@ int main(int argc, char *argv[])
     // Events für Tastatur und Maus festlegen
     mlx_hook(data.win, 2, 1L << 0, handle_keypress, &data); // Tastendruck
     mlx_hook(data.win, 6, 1L << 6, handle_mouse, &data);    // Mausbewegung
+	mlx_hook(data.win, 9, 0, handle_focus, &data);  // FocusIn
+	mlx_hook(data.win, 10, 0, handle_focus, &data); // FocusOut
+
 
     // Render-Schleife
     mlx_loop_hook(data.mlx, render, &data);
