@@ -49,13 +49,13 @@ typedef struct s_data {
     void *win;
     t_player player;
     int **buffer;
-    char **map;         // Karte
-    char *north_tex;    // Pfad zur Nord-Textur
-    char *south_tex;    // Pfad zur Süd-Textur
-    char *west_tex;     // Pfad zur West-Textur
-    char *east_tex;     // Pfad zur Ost-Textur
+    char *north_texture;    // Pfad zur Nord-Textur
+    char *south_texture;    // Pfad zur Süd-Textur
+    char *west_texture;     // Pfad zur West-Textur
+    char *east_texture;     // Pfad zur Ost-Textur
 	int floor_color;
     int ceiling_color;
+    char **map;
 } t_data;
 
 /* Key bindings */
