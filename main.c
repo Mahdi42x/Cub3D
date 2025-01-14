@@ -9,25 +9,25 @@ void print_data_textures(t_data *data)
 {
     // Ausgabe der Texturpfade
     if (data->north_texture != NULL) {
-        printf("North Texture: %s\n", data->north_texture);
+        printf("North Texture: %s", data->north_texture);
     } else {
         printf("North Texture: Not Set\n");
     }
 
     if (data->south_texture != NULL) {
-        printf("South Texture: %s\n", data->south_texture);
+        printf("South Texture: %s", data->south_texture);
     } else {
         printf("South Texture: Not Set\n");
     }
 
     if (data->west_texture != NULL) {
-        printf("West Texture: %s\n", data->west_texture);
+        printf("West Texture: %s", data->west_texture);
     } else {
         printf("West Texture: Not Set\n");
     }
 
     if (data->east_texture != NULL) {
-        printf("East Texture: %s\n", data->east_texture);
+        printf("East Texture: %s", data->east_texture);
     } else {
         printf("East Texture: Not Set\n");
     }
@@ -64,40 +64,31 @@ char **parse_map(int fd) {
     char **map = NULL;
     char *line;
     int rows = 0;
-    int max_width = 0;
+    int start_parsing = 0;  // Variable, um zu verfolgen, wann die Map zu parsen beginnt
 
     while ((line = get_next_line(fd)) != NULL) {
-        if (*line == '1' || *line == ' ') {
-            int len = strlen(line);
-            if (len > max_width) {
-                max_width = len; // Maximale Breite der Map feststellen
+        // Ignoriere Zeilen, die vor der Map sind
+        if (start_parsing == 0) {
+            // Prüfen, ob nach der "C"-Zeile oder der 8. Zeile die Map beginnt
+            if (strncmp(line, "C ", 2) == 0 || *line == '\0') {
+                start_parsing = 1;  // Map ab der nächsten Zeile parsen
             }
-
+        }
+        
+        // Ab hier wird die Map geparst, es dürfen keine leeren Zeilen mehr vor der Map kommen
+        if (start_parsing == 1 && line[0] != '\0') {
             map = realloc(map, sizeof(char *) * (rows + 1));
             if (map == NULL) {
                 perror("Error");
                 exit(EXIT_FAILURE);
             }
-            map[rows++] = strdup(line);
+            map[rows++] = strdup(line);  // Die Zeile zur Map hinzufügen
+        } else if (*line == '\0' && rows > 0) {
+            // Stoppt das Parsen der Map, wenn eine leere Zeile kommt, aber sicherstellen, dass es nicht zu früh ist
+            break;
         }
-        free(line);
-    }
-
-    // Rechteckige Map erstellen
-    for (int i = 0; i < rows; i++) {
-        int len = strlen(map[i]);
-        if (len < max_width) {
-            char *padded_line = malloc(max_width + 1);
-            if (padded_line == NULL) {
-                perror("Error");
-                exit(EXIT_FAILURE);
-            }
-            strcpy(padded_line, map[i]);
-            memset(padded_line + len, ' ', max_width - len); // Auffüllen mit Leerzeichen
-            padded_line[max_width] = '\0';
-            free(map[i]);
-            map[i] = padded_line;
-        }
+        
+        free(line);  // Zeile nach Gebrauch freigeben
     }
 
     // NULL-Terminierung der Map
@@ -110,7 +101,6 @@ char **parse_map(int fd) {
 
     return map;
 }
-
 
 
 int parse_color(char *str, int i)
