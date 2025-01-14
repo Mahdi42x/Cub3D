@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#define M_PI 3.14159265358979323846
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 900
 #define TILE_SIZE 64
@@ -19,7 +20,6 @@
 #define PLAYER_ROT_SPEED 0.05
 #define MAP_WIDTH 10
 #define MAP_HEIGHT 10
-
 
 char *map[MAP_HEIGHT] = {
     "1111111111",
@@ -41,6 +41,7 @@ typedef struct s_player {
     double dir_y;
     double plane_x;
     double plane_y;
+	double angle;
 } t_player;
 
 typedef struct s_data {
@@ -53,8 +54,8 @@ typedef struct s_data {
     char *south_tex;    // Pfad zur Süd-Textur
     char *west_tex;     // Pfad zur West-Textur
     char *east_tex;     // Pfad zur Ost-Textur
-    int floor_color[3]; // Bodenfarbe (RGB)
-    int ceiling_color[3]; // Deckenfarbe (RGB)
+	int floor_color;
+    int ceiling_color;
 } t_data;
 
 /* Key bindings */
@@ -69,6 +70,7 @@ typedef struct s_data {
 #define KEY_ESC 65307
 
 /* Function prototypes */
+void draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int line_length, int bits_per_pixel);
 void init_player(t_player *player);
 int handle_keypress(int key, t_data *data);
 void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixel);
