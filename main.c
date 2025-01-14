@@ -5,7 +5,116 @@
 
 // }
 
-int parse_color(char *str) {
+void print_data_textures(t_data *data)
+{
+    // Ausgabe der Texturpfade
+    if (data->north_texture != NULL) {
+        printf("North Texture: %s\n", data->north_texture);
+    } else {
+        printf("North Texture: Not Set\n");
+    }
+
+    if (data->south_texture != NULL) {
+        printf("South Texture: %s\n", data->south_texture);
+    } else {
+        printf("South Texture: Not Set\n");
+    }
+
+    if (data->west_texture != NULL) {
+        printf("West Texture: %s\n", data->west_texture);
+    } else {
+        printf("West Texture: Not Set\n");
+    }
+
+    if (data->east_texture != NULL) {
+        printf("East Texture: %s\n", data->east_texture);
+    } else {
+        printf("East Texture: Not Set\n");
+    }
+}
+
+void print_data_map(t_data *data)
+{
+    // Ausgabe der Map
+    if (data->map != NULL)
+    {
+        printf("\nMap:\n");
+        for (int i = 0; data->map[i] != NULL; i++)
+        {
+            printf("%s", data->map[i]);
+        }
+        printf("\n");
+    } else {
+        printf("Map: Not Set\n");
+    }
+}
+
+void parse_texture(char **dest, char *line)
+{
+    while (*line && isspace(*line)) // Überspringe Leerzeichen
+        line++;
+    *dest = strdup(line); // Speichere den Pfad
+    if (*dest == NULL) {
+        perror("Error");
+        exit(EXIT_FAILURE);
+    }
+}
+
+char **parse_map(int fd) {
+    char **map = NULL;
+    char *line;
+    int rows = 0;
+    int max_width = 0;
+
+    while ((line = get_next_line(fd)) != NULL) {
+        if (*line == '1' || *line == ' ') {
+            int len = strlen(line);
+            if (len > max_width) {
+                max_width = len; // Maximale Breite der Map feststellen
+            }
+
+            map = realloc(map, sizeof(char *) * (rows + 1));
+            if (map == NULL) {
+                perror("Error");
+                exit(EXIT_FAILURE);
+            }
+            map[rows++] = strdup(line);
+        }
+        free(line);
+    }
+
+    // Rechteckige Map erstellen
+    for (int i = 0; i < rows; i++) {
+        int len = strlen(map[i]);
+        if (len < max_width) {
+            char *padded_line = malloc(max_width + 1);
+            if (padded_line == NULL) {
+                perror("Error");
+                exit(EXIT_FAILURE);
+            }
+            strcpy(padded_line, map[i]);
+            memset(padded_line + len, ' ', max_width - len); // Auffüllen mit Leerzeichen
+            padded_line[max_width] = '\0';
+            free(map[i]);
+            map[i] = padded_line;
+        }
+    }
+
+    // NULL-Terminierung der Map
+    map = realloc(map, sizeof(char *) * (rows + 1));
+    if (map == NULL) {
+        perror("Error");
+        exit(EXIT_FAILURE);
+    }
+    map[rows] = NULL;
+
+    return map;
+}
+
+
+
+int parse_color(char *str, int i)
+{
     int r, g, b;
 
     while (*str && isspace(*str)) // Skip leading spaces
@@ -15,32 +124,84 @@ int parse_color(char *str) {
     g = atoi(str);
     str = strchr(str, ',') + 1;
     b = atoi(str);
+    // printf("Farbe: %i,%i,%i\n", r,g,b);
 
     if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
         fprintf(stderr, "Error: Invalid RGB value in .cub file.\n");
         exit(EXIT_FAILURE);
     }
+    if (i == 0)
+        printf("F: %i,%i,%i\n", r,g,b);
+    else if (i == 1)
+        printf("C: %i,%i,%i\n", r,g,b);
     return (r << 16) | (g << 8) | b;
 }
 
-void parse_cub_file(t_data *data, const char *file_path) {
-    FILE *file = fopen(file_path, "r");
-    if (!file) {
+char **parse_map_from_line(char *first_map_line, int fd) {
+    char **map = NULL;
+    char *line = first_map_line;
+    int rows = 0;
+
+    while (line != NULL) {
+        if (*line == '1') { // Map-Zeilen beginnen mit '1'
+            map = realloc(map, sizeof(char *) * (rows + 1));
+            if (map == NULL) {
+                perror("Error");
+                exit(EXIT_FAILURE);
+            }
+            map[rows++] = strdup(line);
+        } else {
+            break; // Stoppe, wenn eine ungültige Zeile auftaucht
+        }
+        free(line);
+        line = get_next_line(fd);
+    }
+
+    // NULL-Terminierung der Map
+    map = realloc(map, sizeof(char *) * (rows + 1));
+    if (map == NULL) {
         perror("Error");
-        fprintf(stderr, "Error: Could not open .cub file: %s\n", file_path);
+        exit(EXIT_FAILURE);
+    }
+    map[rows] = NULL;
+
+    return map;
+}
+
+
+void parse_cub_file(t_data *data, const char *file_path) {
+    int fd = open(file_path, O_RDONLY);
+    if (fd == -1) {
+        perror("Error");
         exit(EXIT_FAILURE);
     }
 
-    char line[256];
-    while (fgets(line, sizeof(line), file)) {
-        if (strncmp(line, "F ", 2) == 0) {
-            data->floor_color = parse_color(line + 2);
+    char *line;
+    while ((line = get_next_line(fd)) != NULL)
+    {
+        if (strncmp(line, "NO ", 3) == 0) {
+            parse_texture(&data->north_texture, line + 3);
+        } else if (strncmp(line, "SO ", 3) == 0) {
+            parse_texture(&data->south_texture, line + 3);
+        } else if (strncmp(line, "WE ", 3) == 0) {
+            parse_texture(&data->west_texture, line + 3);
+        } else if (strncmp(line, "EA ", 3) == 0) {
+            parse_texture(&data->east_texture, line + 3);
+        } else if (strncmp(line, "F ", 2) == 0) {
+            data->floor_color = parse_color(line + 2, 0);
         } else if (strncmp(line, "C ", 2) == 0) {
-            data->ceiling_color = parse_color(line + 2);
+            data->ceiling_color = parse_color(line + 2, 1);
+        } else if (*line == '1') { // Map beginnt
+            data->map = parse_map_from_line(line, fd);
+            break; // Map ist vollständig verarbeitet
+        } else {
+            free(line); // Zeile freigeben, wenn sie keine Relevanz hat
         }
-        // Optionally parse other fields like textures (NO, SO, WE, EA)
     }
-    fclose(file);
+    print_data_map(data);
+    printf("\n");
+    print_data_textures(data);
+    close(fd);
 }
 
 void set_player_orientation(char direction, t_player *player) {
@@ -366,12 +527,14 @@ int	is_cub_file(char *file_path)
 		if (strncmp(file_path + length - 4, ".cub", 4) == 0)
 		{
 			printf("map selected!\n");
+            printf("\n");
 			return (1);
 		}
 	}
 	printf("The map does not have the correct ending '.cub'\n");
 	return (0);
 }
+
 int main(int argc, char *argv[])
 {
     t_data data;
@@ -392,9 +555,7 @@ int main(int argc, char *argv[])
         return (1);
     }
 	parse_cub_file(&data, argv[1]);
-    // Map parsen und in data speichern
-    //parse_map(&data, fd);
-    //close(fd); // Datei nach dem Parsen schließen
+
 
     // MiniLibX initialisieren
     data.mlx = mlx_init();
