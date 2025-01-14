@@ -158,6 +158,38 @@ char **parse_map_from_line(char *first_map_line, int fd) {
     return map;
 }
 
+void parse_player(t_data *data) {
+    int row = 0;
+
+    // Durchlaufe alle Zeilen der Map
+    while (data->map[row] != NULL) {
+        int col = 0;
+        // Durchlaufe jede Spalte der aktuellen Zeile
+        while (data->map[row][col] != '\0') {
+            // Überprüfe auf die verschiedenen Spielerorientierungen (N, S, E, O)
+            if (data->map[row][col] == 'N' || data->map[row][col] == 'S' || 
+                data->map[row][col] == 'E' || data->map[row][col] == 'O') {
+
+                // Speichere die Position des Spielers
+                data->player_x = row;  // Zeilenposition des Spielers
+                data->player_y = col;  // Spaltenposition des Spielers
+                data->player_orientation = data->map[row][col];  // Orientierung des Spielers (N, S, E, O)
+
+                // Optional: Spielerzeichen durch '0' ersetzen, um es aus der Map zu entfernen
+                data->map[row][col] = '0';
+
+                return;  // Spieler gefunden, also keine weiteren Zeilen durchsuchen
+            }
+            col++;  // Nächste Spalte
+        }
+        row++;  // Nächste Zeile
+    }
+
+    // Falls kein Spielerzeichen gefunden wurde, gib eine Fehlermeldung aus
+    fprintf(stderr, "Error: No player found in the map.\n");
+    exit(EXIT_FAILURE);
+}
+
 
 void parse_cub_file(t_data *data, const char *file_path) {
     int fd = open(file_path, O_RDONLY);
@@ -188,9 +220,14 @@ void parse_cub_file(t_data *data, const char *file_path) {
             free(line); // Zeile freigeben, wenn sie keine Relevanz hat
         }
     }
+
+    // Nach dem Parsen der Map, Spieler positionieren
+    parse_player(data);
+
     print_data_map(data);
     printf("\n");
     print_data_textures(data);
+    printf("Player position: (%d, %d) facing '%c'\n", data->player_x, data->player_y, data->player_orientation);
     close(fd);
 }
 
