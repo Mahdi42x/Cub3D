@@ -56,6 +56,9 @@ typedef struct s_data {
 	int floor_color;
     int ceiling_color;
     char **map;
+    int player_x;
+    int player_y;
+    char player_orientation;  // 'N', 'S', 'E', 'O'
 } t_data;
 
 /* Key bindings */
