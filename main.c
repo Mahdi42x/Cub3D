@@ -1,45 +1,5 @@
 #include "include/cub3D.h"
 
-// void print_data_textures(t_data *data)
-// {
-//     // Ausgabe der Texturpfade
-//     if (data->north_texture != NULL) {
-//         printf("North Texture: %s", data->north_texture);
-//     } else {
-//         printf("North Texture: Not Set\n");
-//     }
-
-//     if (data->south_texture != NULL) {
-//         printf("South Texture: %s", data->south_texture);
-//     } else {
-//         printf("South Texture: Not Set\n");
-//     }
-
-//     if (data->west_texture != NULL) {
-//         printf("West Texture: %s", data->west_texture);
-//     } else {
-//         printf("West Texture: Not Set\n");
-//     }
-
-//     if (data->east_texture != NULL) {
-//         printf("East Texture: %s", data->east_texture);
-//     } else {
-//         printf("East Texture: Not Set\n");
-//     }
-// }
-
-// void print_data_map(t_data *data) {
-//     if (data->map != NULL) {
-//         printf("\nMap:\n");
-//         for (int i = 0; data->map[i] != NULL; i++) {
-//             printf("%s\n", data->map[i]);
-//         }
-//         printf("\n");
-//     } else {
-//         printf("Map: Not Set\n");
-//     }
-// }
-
 void load_weapon_texture(t_data *data, char *path) {
     data->weapon_texture.img = mlx_xpm_file_to_image(data->mlx, path, &data->weapon_texture.width, &data->weapon_texture.height);
     if (!data->weapon_texture.img) {
@@ -226,10 +186,12 @@ void parse_cub_file(t_data *data, const char *file_path) {
 
     // Calculate the map width after loading the map
     int map_width = 0;
-    for (int i = 0; data->map[i]; i++) {
+    int i = 0;
+    while (data->map[i]) {
         int len = strlen(data->map[i]);
         if (len > map_width)
             map_width = len;
+        i++;
     }
     data->map_width = map_width;
 }
@@ -258,10 +220,11 @@ void set_player_orientation(char direction, t_player *player) {
     }
 }
 
-
 void find_player(char **map, t_player *player) {
-    for (int y = 0; map[y]; y++) {
-        for (int x = 0; map[y][x]; x++) {
+    int y = 0;
+    while (map[y]) {
+        int x = 0;
+        while (map[y][x]) {
             if (map[y][x] == 'N' || map[y][x] == 'S' || map[y][x] == 'E' || map[y][x] == 'W') {
                 player->x = x + 0.5;  // Center the player in the tile
                 player->y = y + 0.5;
@@ -269,7 +232,9 @@ void find_player(char **map, t_player *player) {
                 map[y][x] = '0';  // Replace with empty space
                 return;
             }
+            x++;
         }
+        y++;
     }
 }
 
@@ -336,7 +301,6 @@ void move_player(t_data *data, int key) {
     t_player *player = &data->player;
     double move_x = 0.0;
     double move_y = 0.0;
-    // Handle forward/backward movement
     if (key == KEY_W || key == KEY_UP) {
         move_x += player->dir_x * PLAYER_SPEED;
         move_y += player->dir_y * PLAYER_SPEED;
@@ -384,11 +348,21 @@ void rotate_player(t_data *data, int key) {
         player->angle -= 2 * M_PI;
 }
 
-/* Simple map checker */
 int world_map(t_data *data, int x, int y) {
-    if (x < 0 || y < 0 || !data->map || !data->map[y] || x >= (int)strlen(data->map[y]))
-        return 1;  // Out-of-bounds counts as wall
+    // Define a buffer space for collision near outer walls
+    double buffer = 0.5;
 
+    // Check for out-of-bounds access
+    if (x < 0 || y < 0 || !data->map || !data->map[y] || x >= (int)strlen(data->map[y])) {
+        return 1; // Out-of-bounds counts as a wall
+    }
+
+    // Adjust collision detection for outer walls
+    if (y < buffer || y >= (int)data->map_height - buffer || x < buffer || x >= (int)data->map_width - buffer) {
+        return 1; // Treat positions near any outer wall as a collision
+    }
+
+    // Standard wall check
     return (data->map[y][x] == '1') ? 1 : 0;
 }
 
@@ -404,42 +378,51 @@ void draw_minimap(t_data *data, char *img_data, int line_length, int bits_per_pi
     int radius = 5;  // Radius of the player circle
 
     // Draw the map
-    for (int y = 0; data->map[y]; y++) {
-        for (int x = 0; data->map[y][x]; x++) {
+    int y = 0;
+    while (data->map[y]) {
+        int x = 0;
+        while (data->map[y][x]) {
             int color = (data->map[y][x] == '1') ? 0xFFFFFF : 0x000000;
 
-            for (int i = 0; i < scale; i++) {
-                for (int j = 0; j < scale; j++) {
+            int i = 0;
+            while (i < scale) {
+                int j = 0;
+                while (j < scale) {
                     put_pixel_to_image(img_data, x * scale + i, y * scale + j, color, line_length, bits_per_pixel);
+                    j++;
                 }
+                i++;
             }
+            x++;
         }
+        y++;
     }
 
     // Draw the player in the correct position
     int player_x = (int)(data->player.x * scale);
-	int player_y = (int)(data->player.y * scale);
-
+    int player_y = (int)(data->player.y * scale);
 
     // Draw the player circle
-    for (int dy = -radius; dy <= radius; dy++) {
-        for (int dx = -radius; dx <= radius; dx++) {
+    int dy = -radius;
+    while (dy <= radius) {
+        int dx = -radius;
+        while (dx <= radius) {
             if (dx * dx + dy * dy <= radius * radius) {
                 put_pixel_to_image(img_data, player_x + dx, player_y + dy, 0xFF0000, line_length, bits_per_pixel);
             }
+            dx++;
         }
+        dy++;
     }
 
     // Draw the directional tip (invert Y-axis to fix minimap direction)
     double tip_length = 10.0;
     int tip_x = player_x + (int)(tip_length * data->player.dir_x);
-	int tip_y = player_y + (int)(tip_length * data->player.dir_y);
-
-
-
+    int tip_y = player_y + (int)(tip_length * data->player.dir_y);
 
     draw_line(img_data, player_x, player_y, tip_x, tip_y, 0xFFFFFF, line_length, bits_per_pixel);
 }
+
 
 void draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int line_length, int bits_per_pixel) {
     int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
@@ -498,8 +481,7 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
                 map_y += step_y;
                 side = 1;
             }
-            if (world_map(data, map_x, map_y))
-                hit = 1;
+            if (world_map(data, map_x, map_y)) hit = 1;
         }
 
         perp_wall_dist = (side == 0)
@@ -515,29 +497,50 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
         int tex_num = side == 0 ? (ray_dir_x > 0 ? 0 : 1) : (ray_dir_y > 0 ? 2 : 3);
         t_texture *tex = &data->textures[tex_num];
 
-        double wall_x = side == 0 ? data->player.y + perp_wall_dist * ray_dir_y
-                                  : data->player.x + perp_wall_dist * ray_dir_x;
+        // Check texture validity
+        if (!tex->addr) {
+            fprintf(stderr, "Error: Invalid texture address for texture %d\n", tex_num);
+            continue;
+        }
+
+        double wall_x = side == 0
+            ? data->player.y + perp_wall_dist * ray_dir_y
+            : data->player.x + perp_wall_dist * ray_dir_x;
         wall_x -= floor(wall_x);
 
         int tex_x = (int)(wall_x * tex->width);
         if ((side == 0 && ray_dir_x > 0) || (side == 1 && ray_dir_y < 0))
             tex_x = tex->width - tex_x - 1;
 
-        // 🔥 Draw Ceiling
+        // Draw ceiling
         for (int y = 0; y < draw_start; y++) {
             put_pixel_to_image(img_data, x, y, data->ceiling_color, line_length, bits_per_pixel);
         }
 
-        // 🎨 Draw Wall Texture
+        // Draw wall with texture
         for (int y = draw_start; y < draw_end; y++) {
-            int d = (y * 256) - (WINDOW_HEIGHT * 128) + (line_height * 128);
-            int tex_y = ((d * tex->height) / line_height) / 256;
-            int color = *(int *)(tex->addr + (tex_y * tex->line_length + tex_x * (tex->bpp / 8)));
-            if (side == 1) color = (color >> 1) & 0x7F7F7F;  // Darken side walls
-            put_pixel_to_image(img_data, x, y, color, line_length, bits_per_pixel);
-        }
+    		int d = (y * 256) - (WINDOW_HEIGHT * 128) + (line_height * 128);
 
-        // 🌱 Draw Floor
+    		if (line_height > 0) {
+    		    int tex_y = ((d * tex->height) / line_height) / 256;
+
+    		    // Clamp tex_y to ensure it is within valid bounds
+    		    if (tex_y < 0) tex_y = 0;
+    		    if (tex_y >= tex->height) tex_y = tex->height - 1;
+
+    		    // Ensure tex_x is also valid (should already be, but for safety):
+    		    if (tex_x < 0) tex_x = 0;
+    		    if (tex_x >= tex->width) tex_x = tex->width - 1;
+
+    		    int color = *(int *)(tex->addr + (tex_y * tex->line_length + tex_x * (tex->bpp / 8)));
+    		    if (side == 1) color = (color >> 1) & 0x7F7F7F;  // Darken side walls
+    		    put_pixel_to_image(img_data, x, y, color, line_length, bits_per_pixel);
+    		} else {
+        	fprintf(stderr, "Error: Invalid line_height (%d)\n", line_height);
+    }
+}
+
+        // Draw floor
         for (int y = draw_end; y < WINDOW_HEIGHT; y++) {
             put_pixel_to_image(img_data, x, y, data->floor_color, line_length, bits_per_pixel);
         }
@@ -569,6 +572,29 @@ void render_weapon(t_data *data, char *img_data, int line_length, int bits_per_p
     }
 }
 
+void draw_crosshair(char *img_data, int line_length, int bits_per_pixel, int window_width, int window_height) {
+    int center_x = window_width / 2;
+    int center_y = window_height / 2;
+    int crosshair_size = 10; // Length of the crosshair lines
+    int color = 0xFF0000; // Red color for the crosshair
+
+    // Draw vertical line
+    for (int y = center_y - crosshair_size; y <= center_y + crosshair_size; y++) {
+        if (y >= 0 && y < window_height) { // Ensure within bounds
+            char *pixel = img_data + (y * line_length + center_x * (bits_per_pixel / 8));
+            *(unsigned int *)pixel = color;
+        }
+    }
+
+    // Draw horizontal line
+    for (int x = center_x - crosshair_size; x <= center_x + crosshair_size; x++) {
+        if (x >= 0 && x < window_width) { // Ensure within bounds
+            char *pixel = img_data + (center_y * line_length + x * (bits_per_pixel / 8));
+            *(unsigned int *)pixel = color;
+        }
+    }
+}
+
 /* Render the scene */
 int render(void *param) {
     t_data *data = (t_data *)param;
@@ -586,8 +612,10 @@ int render(void *param) {
     // Draw the minimap (if desired)
     draw_minimap(data, img_data, line_length, bits_per_pixel);
 
-    // 🛠️ Render the weapon
+    // Render the weapon
     render_weapon(data, img_data, line_length, bits_per_pixel);
+
+	draw_crosshair(img_data, line_length, bits_per_pixel, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Show the image
     mlx_put_image_to_window(data->mlx, data->win, img, 0, 0);

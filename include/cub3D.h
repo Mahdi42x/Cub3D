@@ -16,7 +16,7 @@
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 900
 #define TILE_SIZE 64
-#define PLAYER_SPEED 0.2
+#define PLAYER_SPEED 0.125
 #define PLAYER_ROT_SPEED 0.05
 
 typedef struct s_player {
@@ -49,6 +49,7 @@ typedef struct s_data {
     int floor_color;
     int ceiling_color;
     char **map;
+	int map_height;
     int map_width;
 } t_data;
 
