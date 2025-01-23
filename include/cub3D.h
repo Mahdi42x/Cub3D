@@ -44,13 +44,17 @@ typedef struct s_data {
     void *win;
     t_player player;
     int **buffer;
-    t_texture textures[4];  // 0: NO, 1: SO, 2: WE, 3: EA
+    t_texture textures[4];  // 3: NO, 2: SO, 1: WE, 0: EA
 	t_texture weapon_texture;
     int floor_color;
     int ceiling_color;
     char **map;
 	int map_height;
     int map_width;
+    char *no_path; // Pfad für NO
+    char *so_path; // Pfad für SO
+    char *we_path; // Pfad für WE
+    char *ea_path; // Pfad für EA
 } t_data;
 
 /* Key bindings */

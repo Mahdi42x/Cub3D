@@ -157,19 +157,35 @@ void parse_cub_file(t_data *data, const char *file_path) {
 
     char *line;
     while ((line = get_next_line(fd)) != NULL) {
-        if (strncmp(line, "NO ", 3) == 0) {
-            load_texture(data, &data->textures[0], line + 3);  // North
-        } else if (strncmp(line, "SO ", 3) == 0) {
-            load_texture(data, &data->textures[1], line + 3);  // South
-        } else if (strncmp(line, "WE ", 3) == 0) {
-            load_texture(data, &data->textures[2], line + 3);  // West
-        } else if (strncmp(line, "EA ", 3) == 0) {
-            load_texture(data, &data->textures[3], line + 3);  // East
-        } else if (strncmp(line, "F ", 2) == 0) {
+        if (strncmp(line, "NO ", 3) == 0)
+        {
+            data->no_path = ft_strtrim(line + 3, " \n\t");
+            load_texture(data, &data->textures[3], line + 3);  // North
+        }
+        else if (strncmp(line, "SO ", 3) == 0)
+        {
+            data->so_path = ft_strtrim(line + 3, " \n\t");
+            load_texture(data, &data->textures[2], line + 3);  // South
+        }
+        else if (strncmp(line, "WE ", 3) == 0)
+        {
+            data->we_path = ft_strtrim(line + 3, " \n\t");
+            load_texture(data, &data->textures[1], line + 3);  // West
+        }
+        else if (strncmp(line, "EA ", 3) == 0)
+        {
+            data->ea_path = ft_strtrim(line + 3, " \n\t");
+            load_texture(data, &data->textures[0], line + 3);  // East
+        }
+        else if (strncmp(line, "F ", 2) == 0)
+        {
             data->floor_color = parse_color(line + 2, 0);
-        } else if (strncmp(line, "C ", 2) == 0) {
+        }
+        else if (strncmp(line, "C ", 2) == 0)
+        {
             data->ceiling_color = parse_color(line + 2, 1);
-        } else if (*line == '1' || *line == '0' || *line == ' ') {
+        }
+        else if (*line == '1' || *line == '0' || *line == ' ') {
             data->map = parse_map_from_line(line, fd, data);
             break;
         }
@@ -643,6 +659,46 @@ int	is_cub_file(char *file_path)
 	return (0);
 }
 
+void print_texture_paths(t_data *data)
+{
+
+    printf("Texture NO path: %s\n", data->no_path);
+    printf("Texture SO path: %s\n", data->so_path);
+    printf("Texture WE path: %s\n", data->we_path);
+    printf("Texture EA path: %s\n", data->ea_path);
+
+}
+
+void test_texture_loading(void *mlx, char *path, const char *label) {
+    int width, height;
+
+    printf("🔍 Testing texture: %s (Path: %s)\n", label, path);
+
+    // Lade die Textur
+    void *img = mlx_xpm_file_to_image(mlx, path, &width, &height);
+
+    // Überprüfen, ob das Bild geladen werden konnte
+    if (!img) {
+        perror("System Error");
+        fprintf(stderr, "MiniLibX Error: Cannot load texture for %s at path: %s\n", label, path);
+        exit(EXIT_FAILURE);
+    } else {
+        printf("✅ MiniLibX successfully loaded the %s texture (Path: %s, Size: %dx%d)!\n", label, path, width, height);
+        mlx_destroy_image(mlx, img); // Speicher nach dem Test freigeben
+    }
+}
+
+void test_all_textures(t_data *data) {
+    if (data->no_path)
+        test_texture_loading(data->mlx, data->no_path, "NO");
+    if (data->so_path)
+        test_texture_loading(data->mlx, data->so_path, "SO");
+    if (data->we_path)
+        test_texture_loading(data->mlx, data->we_path, "WE");
+    if (data->ea_path)
+        test_texture_loading(data->mlx, data->ea_path, "EA");
+}
+
 int main(int argc, char *argv[])
 {
     t_data data;
@@ -671,19 +727,11 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Error: Failed to initialize MiniLibX.\n");
         return (1);
     }
-	int width, height;
-    void *img = mlx_xpm_file_to_image(data.mlx, "/home/emkalkan/42/Cub3D-main/textures/Brick256.xpm", &width, &height);
 
-    if (!img) {
-        perror("System Error");
-        fprintf(stderr, "MiniLibX Error: Cannot load the test texture.\n");
-        exit(EXIT_FAILURE);
-    } else {
-        printf("✅ MiniLibX successfully loaded the test texture!\n");
-        mlx_destroy_image(data.mlx, img);  // Clean up after the test
-    }
 
 	parse_cub_file(&data, argv[1]);
+    print_texture_paths(&data);
+    test_all_textures(&data);
 	load_weapon_texture(&data, "textures/m4default.xpm");
 
 
