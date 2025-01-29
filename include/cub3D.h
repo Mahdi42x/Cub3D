@@ -69,7 +69,7 @@ typedef struct s_data {
 #define KEY_ESC 65307
 
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
-/*		 						 						PARSING											 					*/
+/*		 						 						PARSING 										 					*/
 /*		 						 						Map Parsing											 				*/
 char	 **parse_map(int fd);
 char	 **parse_map_from_line(char *first_map_line, int fd, t_data *data);
