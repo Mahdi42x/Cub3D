@@ -531,7 +531,6 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
         int tex_num = side == 0 ? (ray_dir_x > 0 ? 0 : 1) : (ray_dir_y > 0 ? 2 : 3);
         t_texture *tex = &data->textures[tex_num];
 
-        // Check texture validity
         if (!tex->addr) {
             fprintf(stderr, "Error: Invalid texture address for texture %d\n", tex_num);
             continue;
@@ -543,6 +542,10 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
         wall_x -= floor(wall_x);
 
         int tex_x = (int)(wall_x * tex->width);
+        
+        // Apply **Horizontal Flip** (flip X-axis)
+        tex_x = tex->width - tex_x - 1;
+
         if ((side == 0 && ray_dir_x > 0) || (side == 1 && ray_dir_y < 0))
             tex_x = tex->width - tex_x - 1;
 
@@ -553,29 +556,20 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
 
         // Draw wall with texture
         for (int y = draw_start; y < draw_end; y++) {
-    		int d = (y * 256) - (WINDOW_HEIGHT * 128) + (line_height * 128);
+            int d = (y * 256) - (WINDOW_HEIGHT * 128) + (line_height * 128);
+            int tex_y = ((d * tex->height) / line_height) / 256;
 
-    		if (line_height > 0) {
-    		    int tex_y = ((d * tex->height) / line_height) / 256;
+            // Ensure valid texture coordinates
+            if (tex_y < 0) tex_y = 0;
+            if (tex_y >= tex->height) tex_y = tex->height - 1;
+            if (tex_x < 0) tex_x = 0;
+            if (tex_x >= tex->width) tex_x = tex->width - 1;
 
-    		    // Clamp tex_y to ensure it is within valid bounds
-    		    if (tex_y < 0) tex_y = 0;
-    		    if (tex_y >= tex->height) tex_y = tex->height - 1;
+            int color = *(int *)(tex->addr + (tex_y * tex->line_length + tex_x * (tex->bpp / 8)));
 
-    		    // Ensure tex_x is also valid (should already be, but for safety):
-    		    if (tex_x < 0) tex_x = 0;
-    		    if (tex_x >= tex->width) tex_x = tex->width - 1;
-
-			tex_y = tex->height - tex_y - 1;  // Apply vertical mirroring
-			int color = *(int *)(tex->addr + (tex_y * tex->line_length + tex_x * (tex->bpp / 8)));
-
-
-    		    if (side == 1) color = (color >> 1) & 0x7F7F7F;  // Darken side walls
-    		    put_pixel_to_image(img_data, x, y, color, line_length, bits_per_pixel);
-    		} else {
-        	fprintf(stderr, "Error: Invalid line_height (%d)\n", line_height);
-    }
-}
+            if (side == 1) color = (color >> 1) & 0x7F7F7F;  // Darken side walls
+            put_pixel_to_image(img_data, x, y, color, line_length, bits_per_pixel);
+        }
 
         // Draw floor
         for (int y = draw_end; y < WINDOW_HEIGHT; y++) {
