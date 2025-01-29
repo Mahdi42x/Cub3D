@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 16:25:57 by mawada            #+#    #+#             */
-/*   Updated: 2025/01/29 16:42:57 by mawada           ###   ########.fr       */
+/*   Updated: 2025/01/29 17:31:38 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,33 +165,34 @@ char	**parse_map_from_line(char	*first_map_line, int fd, t_data *data)
 				map[rows][x] = '0';
 			}
 		}
-
 		rows++;
 		map[rows] = NULL;
-
 		free(line);
 		line = get_next_line(fd);
 	}
-
 	if (!player_found)
 	{
-		fprintf(stderr, "Error: No player spawn (N, E, S, W) found in the map.\n");
+		fprintf(stderr,
+			"Error: No player spawn (N, E, S, W) found in the map.\n");
 		exit(EXIT_FAILURE);
 	}
-
-	return map;
+	return (map);
 }
 
 void	parse_cub_file(t_data *data, const char	*file_path)
 {
-	int fd = open(file_path, O_RDONLY);
+	int		fd;
+	char	*line;
+	int		map_width;
+	int		i;
+	int		len;
+
+	fd = open(file_path, O_RDONLY);
 	if (fd == -1)
 	{
 		perror("Error opening file");
 		exit(EXIT_FAILURE);
 	}
-
-	char	*line;
 	while ((line = get_next_line(fd)) != NULL)
 	{
 		if (strncmp(line, "NO ", 3) == 0)
@@ -225,24 +226,22 @@ void	parse_cub_file(t_data *data, const char	*file_path)
 		else if (*line == '1' || *line == '0' || *line == ' ')
 		{
 			data->map = parse_map_from_line(line, fd, data);
-			break;
+			break ;
 		}
 		free(line);
 	}
-
 	close(fd);
-
 	if (!data->map || !data->map[0])
 	{
-	fprintf(stderr, "Error: Map data is missing or empty in the .cub file.\n");
-	exit(EXIT_FAILURE);
+		fprintf(stderr,
+			"Error: Map data is missing or empty in the .cub file.\n");
+		exit(EXIT_FAILURE);
 	}
-
-	int map_width = 0;
-	int i = 0;
+	map_width = 0;
+	i = 0;
 	while (data->map[i])
 	{
-		int len = strlen(data->map[i]);
+		len = strlen(data->map[i]);
 		if (len > map_width)
 			map_width = len;
 		i++;
@@ -258,7 +257,8 @@ void	set_player_orientation(char	direction, t_player *player)
 		player->dir_y = -1;
 		player->plane_x = 0.66;
 		player->plane_y = 0;
-	} else if (direction == 'S')
+	}
+	else if (direction == 'S')
 	{
 		player->dir_x = 0;
 		player->dir_y = 1;
@@ -281,19 +281,23 @@ void	set_player_orientation(char	direction, t_player *player)
 
 void	find_player(char	**map, t_player *player)
 {
-	int y = 0;
+	int	y;
+	int	x;
+
+	y = 0;
 	while (map[y])
 	{
-		int x = 0;
+		x = 0;
 		while (map[y][x])
 		{
-			if (map[y][x] == 'N' || map[y][x] == 'S' || map[y][x] == 'E' || map[y][x] == 'W')
+			if (map[y][x] == 'N'
+				|| map[y][x] == 'S' || map[y][x] == 'E' || map[y][x] == 'W')
 			{
 				player->x = x + 0.5;
 				player->y = y + 0.5;
 				set_player_orientation(map[y][x], player);
 				map[y][x] = '0';
-				return;
+				return ;
 			}
 			x++;
 		}
@@ -303,9 +307,13 @@ void	find_player(char	**map, t_player *player)
 
 void	move_player(t_data *data, int key)
 {
-	t_player *player = &data->player;
-	double move_x = 0.0;
-	double move_y = 0.0;
+	t_player	*player;
+	double		move_x;
+	double		move_y;
+
+	player = &data->player;
+	move_x = 0.0;
+	move_y = 0.0;
 	if (key == KEY_W || key == KEY_UP)
 	{
 		move_x += player->dir_x * PLAYER_SPEED;
@@ -316,7 +324,6 @@ void	move_player(t_data *data, int key)
 		move_x -= player->dir_x * PLAYER_SPEED;
 		move_y -= player->dir_y * PLAYER_SPEED;
 	}
-
 	if (key == KEY_A)
 	{
 		move_x -= player->plane_x * PLAYER_SPEED;
@@ -327,7 +334,6 @@ void	move_player(t_data *data, int key)
 		move_x += player->plane_x * PLAYER_SPEED;
 		move_y += player->plane_y * PLAYER_SPEED;
 	}
-
 	if (!world_map(data, (int)(player->x + move_x), (int)(player->y)))
 	{
 		player->x += move_x;
@@ -336,22 +342,27 @@ void	move_player(t_data *data, int key)
 	{
 		player->y += move_y;
 	}
-
 }
 
 /* Rotate the player */
 void	rotate_player(t_data *data, int key)
 {
-	t_player *player = &data->player;
-	double old_dir_x = player->dir_x;
-	double old_plane_x = player->plane_x;
-	double rot = (key == KEY_LEFT ? -PLAYER_ROT_SPEED : PLAYER_ROT_SPEED);
+	t_player	*player;
+	double		old_dir_x;
+	double		old_plane_x;
+	double		rot;
+
+	player = &data->player;
+	old_dir_x = player->dir_x;
+	old_plane_x = player->plane_x;
+	if (key == KEY_LEFT)
+		rot = -PLAYER_ROT_SPEED;
+	else
+		rot = PLAYER_ROT_SPEED;
 	player->dir_x = player->dir_x * cos(rot) - player->dir_y * sin(rot);
 	player->dir_y = old_dir_x * sin(rot) + player->dir_y * cos(rot);
-
 	player->plane_x = player->plane_x * cos(rot) - player->plane_y * sin(rot);
 	player->plane_y = old_plane_x * sin(rot) + player->plane_y * cos(rot);
-
 	player->angle += rot;
 	if (player->angle < 0)
 		player->angle += 2 * M_PI;
@@ -361,50 +372,71 @@ void	rotate_player(t_data *data, int key)
 
 int world_map(t_data *data, int x, int y)
 {
-	double buffer = 0.5;
+	double	buffer;
 
-	if (x < 0 || y < 0 || !data->map || !data->map[y] || x >= (int)strlen(data->map[y]))
+	buffer = 0.5;
+	if (x < 0 || y < 0 || !data->map
+		|| !data->map[y] || x >= (int)strlen(data->map[y]))
 	{
-		return 1;
+		return (1);
 	}
-
-	if (y < buffer || y >= (int)data->map_height - buffer || x < buffer || x >= (int)data->map_width - buffer)
+	if (y < buffer || y >= (int)data->map_height - buffer
+		|| x < buffer || x >= (int)data->map_width - buffer)
 	{
-		return 1;
+		return (1);
 	}
-
-	return  (data->map[y][x] == '1') ? 1 : 0;
+	if (data->map[y][x] == '1')
+	{
+		return (1);
+	}
+	else
+	{
+		return (0);
+	}
 }
 
 /* Put a pixel into the image buffer */
 void	put_pixel_to_image(char	*img_data, int x, int y, int color, int line_length, int bits_per_pixel)
 {
-	char	*pixel = img_data + (y * line_length + x * (bits_per_pixel / 8));
+	char	*pixel;
+
+	pixel = img_data + (y * line_length + x * (bits_per_pixel / 8));
 	*(unsigned int *)pixel = color;
 }
 
 /* Draw a minimap */
 void	draw_minimap(t_data *data, char	*img_data, int line_length, int bits_per_pixel)
 {
-	int scale = 10;
-	int radius = 5;
+	int	scale;
+	int	radius;
+	int	y;
+	int	x;
+	int	color;
+	int i;
+	int j;
+	int player_x;
+	int player_y;
 
-	// Draw the map
-	int y = 0;
+	scale = 10;
+	radius = 5;
+	y = 0;
 	while (data->map[y])
 	{
-		int x = 0;
+		x = 0;
 		while (data->map[y][x])
 		{
-			int color = (data->map[y][x] == '1') ? 0xFFFFFF : 0x000000;
-
-			int i = 0;
+			if (data->map[y][x] == '1')
+				color = 0xFFFFFF;
+			else
+				color = 0x000000;
+			i = 0;
 			while (i < scale)
 			{
-				int j = 0;
+				j = 0;
 				while (j < scale)
 				{
-					put_pixel_to_image(img_data, x * scale + i, y * scale + j, color, line_length, bits_per_pixel);
+					put_pixel_to_image(img_data, x * scale + i,
+						y * scale + j, color, line_length, bits_per_pixel);
 					j++;
 				}
 				i++;
@@ -413,9 +445,8 @@ void	draw_minimap(t_data *data, char	*img_data, int line_length, int bits_per_pi
 		}
 		y++;
 	}
-
-	int player_x = (int)(data->player.x * scale);
-	int player_y = (int)(data->player.y * scale);
+	player_x = (int)(data->player.x * scale);
+	player_y = (int)(data->player.y * scale);
 
 	int dy = -radius;
 	while (dy <= radius)
