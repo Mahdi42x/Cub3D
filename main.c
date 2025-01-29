@@ -1,6 +1,7 @@
 #include "include/cub3D.h"
 
-void load_weapon_texture(t_data *data, char *path) {
+void load_weapon_texture(t_data *data, char *path)
+{
     data->weapon_texture.img = mlx_xpm_file_to_image(data->mlx, path, &data->weapon_texture.width, &data->weapon_texture.height);
     if (!data->weapon_texture.img) {
         perror("System Error");
@@ -15,7 +16,8 @@ void load_weapon_texture(t_data *data, char *path) {
     );
 }
 
-void load_texture(t_data *data, t_texture *texture, char *line) {
+void load_texture(t_data *data, t_texture *texture, char *line)
+{
     // Skip leading spaces
     while (*line && isspace(*line))
         line++;
@@ -24,8 +26,6 @@ void load_texture(t_data *data, t_texture *texture, char *line) {
     char *newline = strchr(line, '\n');
     if (newline)
         *newline = '\0';
-
-    printf("🔍 Loading sanitized texture path: '%s'\n", line);
 
     // Load the texture
     texture->img = mlx_xpm_file_to_image(data->mlx, line, &texture->width, &texture->height);
@@ -38,7 +38,8 @@ void load_texture(t_data *data, t_texture *texture, char *line) {
     texture->addr = mlx_get_data_addr(texture->img, &texture->bpp, &texture->line_length, &texture->endian);
 }
 
-char **parse_map(int fd) {
+char **parse_map(int fd)
+{
     char **map = NULL;
     char *line = NULL;
     int rows = 0;
@@ -81,31 +82,30 @@ char **parse_map(int fd) {
 int parse_color(char *str, int i)
 {
     int r, g, b;
+	i = 0;
 
     while (*str && isspace(*str)) // Skip leading spaces
         str++;
-    r = atoi(str);
+    r = ft_atoi(str);
     str = strchr(str, ',') + 1;
-    g = atoi(str);
+    g = ft_atoi(str);
     str = strchr(str, ',') + 1;
-    b = atoi(str);
-    // printf("Farbe: %i,%i,%i\n", r,g,b);
+    b = ft_atoi(str);
 
     if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
         fprintf(stderr, "Error: Invalid RGB value in .cub file.\n");
         exit(EXIT_FAILURE);
     }
-    if (i == 0)
-        printf("F: %i,%i,%i\n", r,g,b);
-    else if (i == 1)
-        printf("C: %i,%i,%i\n", r,g,b);
     return (r << 16) | (g << 8) | b;
 }
 
-char **parse_map_from_line(char *first_map_line, int fd, t_data *data) {
+
+char **parse_map_from_line(char *first_map_line, int fd, t_data *data)
+{
     char **map = NULL;
     char *line = first_map_line;
     int rows = 0;
+    int player_found = 0;  // Track if we found a player
 
     while (line != NULL) {
         size_t len = strlen(line);
@@ -127,16 +127,17 @@ char **parse_map_from_line(char *first_map_line, int fd, t_data *data) {
             exit(EXIT_FAILURE);
         }
 
-        // Find player position during parsing
+        // Find player position during parsing (before modifying the map)
         for (int x = 0; map[rows][x]; x++) {
-		    char c = map[rows][x];
-		    if (c == 'N' || c == 'S' || c == 'E' || c == 'W') {
-		        data->player.x = x + 0.5;
-		        data->player.y = rows + 0.5;
-		        set_player_orientation(c, &data->player);
-		        map[rows][x] = '0';  // Replace with empty space
-		    }
-		}
+            char c = map[rows][x];
+            if (c == 'N' || c == 'S' || c == 'E' || c == 'W') {
+                data->player.x = x + 0.5;
+                data->player.y = rows + 0.5;
+                set_player_orientation(c, &data->player);
+                player_found = 1;  // Mark that we found a player
+                map[rows][x] = '0';  // Replace with empty space
+            }
+        }
 
         rows++;
         map[rows] = NULL;  // Null-terminate the array
@@ -145,10 +146,17 @@ char **parse_map_from_line(char *first_map_line, int fd, t_data *data) {
         line = get_next_line(fd);
     }
 
+    // Ensure a player was found
+    if (!player_found) {
+        fprintf(stderr, "Error: No player spawn (N, E, S, W) found in the map.\n");
+        exit(EXIT_FAILURE);
+    }
+
     return map;
 }
 
-void parse_cub_file(t_data *data, const char *file_path) {
+void parse_cub_file(t_data *data, const char *file_path)
+{
     int fd = open(file_path, O_RDONLY);
     if (fd == -1) {
         perror("Error opening file");
@@ -195,10 +203,11 @@ void parse_cub_file(t_data *data, const char *file_path) {
     close(fd);
 
     // Ensure the map was loaded before calculating map width
-    if (data->map == NULL) {
-        fprintf(stderr, "Error: Map data is missing in the .cub file.\n");
-        exit(EXIT_FAILURE);
-    }
+    if (!data->map || !data->map[0]) {
+    fprintf(stderr, "Error: Map data is missing or empty in the .cub file.\n");
+    exit(EXIT_FAILURE);
+	}
+
 
     // Calculate the map width after loading the map
     int map_width = 0;
@@ -212,7 +221,8 @@ void parse_cub_file(t_data *data, const char *file_path) {
     data->map_width = map_width;
 }
 
-void set_player_orientation(char direction, t_player *player) {
+void set_player_orientation(char direction, t_player *player)
+{
     if (direction == 'N') {
         player->dir_x = 0;
         player->dir_y = -1;
@@ -236,7 +246,8 @@ void set_player_orientation(char direction, t_player *player) {
     }
 }
 
-void find_player(char **map, t_player *player) {
+void find_player(char **map, t_player *player)
+{
     int y = 0;
     while (map[y]) {
         int x = 0;
@@ -254,7 +265,8 @@ void find_player(char **map, t_player *player) {
     }
 }
 
-int handle_focus(int event, void *param) {
+int handle_focus(int event, void *param)
+{
     t_data *data = (t_data *)param;
 
     if (event == 9) {  // FocusIn
@@ -268,7 +280,8 @@ int handle_focus(int event, void *param) {
     return (0);
 }
 
-int handle_mouse(int x, __attribute__((unused)) int y, t_data *data) {
+int handle_mouse(int x, __attribute__((unused)) int y, t_data *data)
+{
     static int center_x = WINDOW_WIDTH / 2;
 
     if (x == center_x) 
@@ -301,7 +314,8 @@ int handle_mouse(int x, __attribute__((unused)) int y, t_data *data) {
 }
 
 /* Handle keyboard input */
-int handle_keypress(int key, t_data *data) {
+int handle_keypress(int key, t_data *data)
+{
     if (key == KEY_ESC) {
         mlx_destroy_window(data->mlx, data->win);
         exit(0);
@@ -313,7 +327,8 @@ int handle_keypress(int key, t_data *data) {
     return (0);
 }
 
-void move_player(t_data *data, int key) {
+void move_player(t_data *data, int key)
+{
     t_player *player = &data->player;
     double move_x = 0.0;
     double move_y = 0.0;
@@ -345,7 +360,8 @@ void move_player(t_data *data, int key) {
 }
 
 /* Rotate the player */
-void rotate_player(t_data *data, int key) {
+void rotate_player(t_data *data, int key)
+{
     t_player *player = &data->player;
     double old_dir_x = player->dir_x;
     double old_plane_x = player->plane_x;
@@ -364,7 +380,8 @@ void rotate_player(t_data *data, int key) {
         player->angle -= 2 * M_PI;
 }
 
-int world_map(t_data *data, int x, int y) {
+int world_map(t_data *data, int x, int y)
+{
     // Define a buffer space for collision near outer walls
     double buffer = 0.5;
 
@@ -455,7 +472,8 @@ void draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int li
 }
 
 /* Raycasting implementation */
-void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixel) {
+void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixel)
+{
     for (int x = 0; x < WINDOW_WIDTH; x++) {
         double camera_x = 2 * x / (double)WINDOW_WIDTH - 1;
         double ray_dir_x = data->player.dir_x + data->player.plane_x * camera_x;
@@ -548,7 +566,10 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
     		    if (tex_x < 0) tex_x = 0;
     		    if (tex_x >= tex->width) tex_x = tex->width - 1;
 
-    		    int color = *(int *)(tex->addr + (tex_y * tex->line_length + tex_x * (tex->bpp / 8)));
+			tex_y = tex->height - tex_y - 1;  // Apply vertical mirroring
+			int color = *(int *)(tex->addr + (tex_y * tex->line_length + tex_x * (tex->bpp / 8)));
+
+
     		    if (side == 1) color = (color >> 1) & 0x7F7F7F;  // Darken side walls
     		    put_pixel_to_image(img_data, x, y, color, line_length, bits_per_pixel);
     		} else {
@@ -563,7 +584,8 @@ void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixe
     }
 }
 
-void render_weapon(t_data *data, char *img_data, int line_length, int bits_per_pixel) {
+void render_weapon(t_data *data, char *img_data, int line_length, int bits_per_pixel)
+{
     t_texture *weapon = &data->weapon_texture;
 
     float weapon_scale = 1.5;  // Adjust this value to control size
@@ -588,7 +610,8 @@ void render_weapon(t_data *data, char *img_data, int line_length, int bits_per_p
     }
 }
 
-void draw_crosshair(char *img_data, int line_length, int bits_per_pixel, int window_width, int window_height) {
+void draw_crosshair(char *img_data, int line_length, int bits_per_pixel, int window_width, int window_height)
+{
     int center_x = window_width / 2;
     int center_y = window_height / 2;
     int crosshair_size = 10; // Length of the crosshair lines
@@ -612,7 +635,8 @@ void draw_crosshair(char *img_data, int line_length, int bits_per_pixel, int win
 }
 
 /* Render the scene */
-int render(void *param) {
+int render(void *param)
+{
     t_data *data = (t_data *)param;
 
     int bits_per_pixel;
@@ -649,11 +673,7 @@ int	is_cub_file(char *file_path)
 	if (length >= 4)
 	{
 		if (strncmp(file_path + length - 4, ".cub", 4) == 0)
-		{
-			printf("map selected!\n");
-            printf("\n");
 			return (1);
-		}
 	}
 	printf("The map does not have the correct ending '.cub'\n");
 	return (0);
@@ -669,7 +689,8 @@ void print_texture_paths(t_data *data)
 
 }
 
-void test_texture_loading(void *mlx, char *path, const char *label) {
+void test_texture_loading(void *mlx, char *path, const char *label)
+{
     int width, height;
 
     printf("🔍 Testing texture: %s (Path: %s)\n", label, path);
@@ -688,7 +709,8 @@ void test_texture_loading(void *mlx, char *path, const char *label) {
     }
 }
 
-void test_all_textures(t_data *data) {
+void test_all_textures(t_data *data)
+{
     if (data->no_path)
         test_texture_loading(data->mlx, data->no_path, "NO");
     if (data->so_path)
@@ -699,68 +721,159 @@ void test_all_textures(t_data *data) {
         test_texture_loading(data->mlx, data->ea_path, "EA");
 }
 
+int has_player(char **map)
+{
+    if (!map || !map[0]) return 0;  // Ensure the map exists
+
+    for (int y = 0; map[y]; y++) {
+        for (int x = 0; map[y][x]; x++) {
+            if (map[y][x] == 'N' || map[y][x] == 'E' || map[y][x] == 'S' || map[y][x] == 'W')
+                return 1;  // Player found
+        }
+    }
+    return 0;  // No player found
+}
+
+int flood_fill(char **map, int x, int y, int rows, int cols, char **visited)
+{
+    if (x < 0 || y < 0 || x >= cols || y >= rows || map[y][x] == '1' || visited[y][x])
+        return 0;  // Stop if out of bounds, hit a wall, or already visited.
+
+    if (x == 0 || y == 0 || x == cols - 1 || y == rows - 1)
+        return 1;  // Found an open edge → map is not enclosed.
+
+    visited[y][x] = 1;  // Mark as visited.
+
+    // Check in all four directions
+    return flood_fill(map, x + 1, y, rows, cols, visited) ||
+           flood_fill(map, x - 1, y, rows, cols, visited) ||
+           flood_fill(map, x, y + 1, rows, cols, visited) ||
+           flood_fill(map, x, y - 1, rows, cols, visited);
+}
+
+int is_map_enclosed(char **map)
+{
+    if (!map || !map[0]) {
+        fprintf(stderr, "Error: The map is missing or empty.\n");
+        return 0;  // Return "not enclosed" to trigger an error in `main`
+    }
+
+    int rows = 0, cols = 0;
+    while (map[rows])
+        rows++;  // Count rows
+
+    if (rows == 0) {
+        fprintf(stderr, "Error: The map contains no valid data.\n");
+        return 0;
+    }
+
+    cols = strlen(map[0]);  // Ensure map[0] exists before calling strlen
+
+    // Allocate visited map
+    char **visited = malloc(rows * sizeof(char *));
+    if (!visited) {
+        perror("Error allocating memory for visited map");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < rows; i++) {
+        visited[i] = calloc(cols, sizeof(char));
+        if (!visited[i]) {
+            perror("Error allocating visited row");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // Find an open space (0, N, E, S, W) to start flood fill
+    for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+            if (map[y][x] == '0' || map[y][x] == 'N' || map[y][x] == 'E' || map[y][x] == 'S' || map[y][x] == 'W') {
+                int result = flood_fill(map, x, y, rows, cols, visited);
+
+                // Free memory
+                for (int i = 0; i < rows; i++)
+                    free(visited[i]);
+                free(visited);
+
+                return !result;  // If we found an open edge, map is not enclosed.
+            }
+        }
+    }
+    // Free memory if no open space was found
+    for (int i = 0; i < rows; i++)
+        free(visited[i]);
+    free(visited);
+
+    return 1;  // If no open space was found, the map is fully enclosed.
+}
+
+
 int main(int argc, char *argv[])
 {
     t_data data;
     int fd;
 
-    // Überprüfen, ob die Argumente korrekt sind
-    if (argc != 2 || !is_cub_file(argv[1]))
-    {
-        printf("try: %s <map.cub>\n", argv[0]);
+    // Check if the arguments are correct
+    if (argc != 2 || !is_cub_file(argv[1])) {
+        printf("Usage: %s <map.cub>\n", argv[0]);
         return (1);
     }
 
-    // Öffnen der .cub-Datei
+    // Open the .cub file
     fd = open(argv[1], O_RDONLY);
-    if (fd == -1)
-    {
-        perror("Fehler beim Öffnen der Datei");
+    if (fd == -1) {
+        perror("Error opening file");
         return (1);
     }
 
-
-    // MiniLibX initialisieren
+    // Initialize MiniLibX
     data.mlx = mlx_init();
-    if (!data.mlx)
-    {
+    if (!data.mlx) {
         fprintf(stderr, "Error: Failed to initialize MiniLibX.\n");
         return (1);
     }
 
+    // Parse the .cub file (this loads data.map)
+    parse_cub_file(&data, argv[1]);
 
-	parse_cub_file(&data, argv[1]);
+    // Ensure the map is valid before checking enclosure
+    if (!data.map || !data.map[0]) {
+        fprintf(stderr, "Error: The map is missing or empty.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Check if the map is enclosed
+    if (!is_map_enclosed(data.map)) {
+        fprintf(stderr, "Error: The map is not fully enclosed by walls.\n");
+        exit(EXIT_FAILURE);
+    }
     print_texture_paths(&data);
     test_all_textures(&data);
-	load_weapon_texture(&data, "textures/m4default.xpm");
+    load_weapon_texture(&data, "textures/m4default.xpm");
 
-
-    // Erstellen eines Fensters
+    // Create a window
     data.win = mlx_new_window(data.mlx, WINDOW_WIDTH, WINDOW_HEIGHT, "cub3D");
-    if (!data.win)
-    {
+    if (!data.win) {
         fprintf(stderr, "Error: Failed to create a window.\n");
         return (1);
     }
 
-    // Maus sperren und verbergen zu Beginn
+    // Hide and center the mouse
     mlx_mouse_hide(data.mlx, data.win);
     mlx_mouse_move(data.mlx, data.win, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
 
-    // Events für Tastatur und Maus festlegen
-    mlx_hook(data.win, 2, 1L << 0, handle_keypress, &data); // Tastendruck
-    mlx_hook(data.win, 6, 1L << 6, handle_mouse, &data);    // Mausbewegung
-	mlx_hook(data.win, 9, 0, handle_focus, &data);  // FocusIn
-	mlx_hook(data.win, 10, 0, handle_focus, &data); // FocusOut
+    // Set up event hooks
+    mlx_hook(data.win, 2, 1L << 0, handle_keypress, &data);
+    mlx_hook(data.win, 6, 1L << 6, handle_mouse, &data);
+    mlx_hook(data.win, 9, 0, handle_focus, &data);
+    mlx_hook(data.win, 10, 0, handle_focus, &data);
 
-
-    // Render-Schleife
+    // Start the render loop
     mlx_loop_hook(data.mlx, render, &data);
     mlx_loop(data.mlx);
 
-    // Speicher für die Map nach der Verwendung freigeben
-    for (int i = 0; data.map[i] != NULL; i++)
-    {
+    // Free map memory
+    for (int i = 0; data.map[i] != NULL; i++) {
         free(data.map[i]);
     }
     free(data.map);

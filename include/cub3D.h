@@ -68,17 +68,51 @@ typedef struct s_data {
 #define KEY_DOWN 65364
 #define KEY_ESC 65307
 
-/* Function prototypes */
-void set_player_orientation(char direction, t_player *player);
-void draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int line_length, int bits_per_pixel);
-void init_player(t_player *player);
-int handle_keypress(int key, t_data *data);
-void raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixel);
-int render(void *param);
-int world_map(t_data *data, int x, int y);
-void move_player(t_data *data, int key);
-void rotate_player(t_data *data, int key);
-void put_pixel_to_image(char *img_data, int x, int y, int color, int line_length, int bits_per_pixel);
-void draw_minimap(t_data *data, char *img_data, int line_length, int bits_per_pixel);
+/*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
+/*		 						 						PARSING											 					*/
+/*		 						 						Map Parsing											 				*/
+char	 **parse_map(int fd);
+char	 **parse_map_from_line(char *first_map_line, int fd, t_data *data);
+void	 find_player(char **map, t_player *player);
 
+/*		 						 						Fload fill											 				*/
+int 	has_player(char **map);
+int 	is_map_enclosed(char **map);
+int 	flood_fill(char **map, int x, int y, int rows, int cols, char **visited);
+
+/*		 						 						File Parsing					 				 					*/
+void	 parse_cub_file(t_data *data, const char *file_path);
+int		is_cub_file(char *file_path);
+int 	parse_color(char *str, int i);
+void	 test_texture_loading(void *mlx, char *path, const char *label);
+void	 test_all_textures(t_data *data);
+
+/*		 						 						Load					 						 					*/
+void	 load_weapon_texture(t_data *data, char *path);
+void	 load_texture(t_data *data, t_texture *texture, char *line);
+
+/*		 						 						Init 					 						 					*/
+void	 set_player_orientation(char direction, t_player *player);
+
+/*		 						 						Input											 					*/
+int 	handle_focus(int event, void *param);
+int 	handle_mouse(int x, __attribute__((unused)) int y, t_data *data);
+int 	handle_keypress(int key, t_data *data);
+/*|++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|*/
+/*		 						 						EXEC 							 						 			*/
+/*		 						 						Movement						 				 					*/
+void	 move_player(t_data *data, int key);
+void	 rotate_player(t_data *data, int key);
+int 	world_map(t_data *data, int x, int y);
+/*		 						 						Casting							 				 					*/
+void	 raycasting(t_data *data, char *img_data, int line_length, int bits_per_pixel);
+int 	render(void *param);
+void	 render_weapon(t_data *data, char *img_data, int line_length, int bits_per_pixel);
+/*		 						 						Draw 							 				 					*/
+void	 put_pixel_to_image(char *img_data, int x, int y, int color, int line_length, int bits_per_pixel);
+void	 draw_minimap(t_data *data, char *img_data, int line_length, int bits_per_pixel);
+void	 draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int line_length, int bits_per_pixel);
+void	 draw_crosshair(char *img_data, int line_length, int bits_per_pixel, int window_width, int window_height);
+void	 print_texture_paths(t_data *data);
+/*\++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++/*/
 #endif
