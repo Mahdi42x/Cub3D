@@ -10,20 +10,13 @@ LIBS = ./libs/libft/libft.a
 
 # Source files
 MAIN = main
-INPUT = input
-# PARSING = line line2 line3 tokens tokens2 expansions
-# ENV = env shlvl get_env sort_env
-# EXEC = bin builtin exec bin_help
-# BUILTINS = env export export2 exit cd echo pwd unset
-# TOOLS = free parsing parsing2 type token fd expansions
+EXECUTE = casting movement draw
+PARSING = map_parsing input flood_fill file_parsing load init
 
 SRC = $(addsuffix .c, $(addprefix srcs/main/, $(MAIN))) \
-	$(addsuffix .c, $(addprefix srcs/input/, $(INPUT))) \
-	#   $(addsuffix .c, $(addprefix srcs/parsing/, $(PARSING))) \
-	#   $(addsuffix .c, $(addprefix srcs/env/, $(ENV))) \
-	#   $(addsuffix .c, $(addprefix srcs/exec/, $(EXEC))) \
-	#   $(addsuffix .c, $(addprefix srcs/builtins/, $(BUILTINS))) \
-	#   $(addsuffix .c, $(addprefix srcs/tools/, $(TOOLS))) \
+	$(addsuffix .c, $(addprefix srcs/execute/, $(EXECUTE))) \
+	$(addsuffix .c, $(addprefix srcs/parsing/, $(PARSING))) \
+
 
 OBJ = $(SRC:.c=.o)
 
