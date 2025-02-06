@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 16:48:15 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/06 13:41:23 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/06 17:32:58 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	raycasting(t_data *data, char *img_data,
 		int			step_y;
 		int			hit;
 		int			side;
-
+		
 		camera_x = 2 * x / (double)WINDOW_WIDTH - 1;
 		ray_dir_x = data->player.dir_x + data->player.plane_x * camera_x;
 		ray_dir_y = data->player.dir_y + data->player.plane_y * camera_x;
@@ -101,7 +101,8 @@ void	raycasting(t_data *data, char *img_data,
 		int			tex_x;
 
 		if (perp_wall_dist < 0.0001)
-            		perp_wall_dist = 0.0001;
+			perp_wall_dist = 0.0001;
+		line_height = (int)(WINDOW_HEIGHT / perp_wall_dist);
 		line_height = (int)(WINDOW_HEIGHT / perp_wall_dist);
 		draw_start = -line_height / 2 + WINDOW_HEIGHT / 2;
 		if (draw_start < 0)
@@ -208,7 +209,7 @@ int	render(void *param)
 	int		endian;
 	char	*img_data;
 	t_data	*data;
-
+	
 	data = (t_data *)param;
 	data->img = mlx_new_image(data->mlx, WINDOW_WIDTH, WINDOW_HEIGHT);
 	img_data = mlx_get_data_addr(data->img,
@@ -245,10 +246,16 @@ void	render_weapon(t_data *data, char *img_data, int line_length, int bits_per_p
 		while (renderweapon.x < weapon_width)
 		{
 			renderweapon.tex_x = renderweapon.x * weapon->width / weapon_width;
-			renderweapon.tex_y = renderweapon.y * weapon->height / weapon_height;
-			renderweapon.color = *(int *)(weapon->addr + (renderweapon.tex_y * weapon->line_length + renderweapon.tex_x * (weapon->bpp / 8)));
+			renderweapon.tex_y = renderweapon.y
+				* weapon->height / weapon_height;
+			renderweapon.color = *(int *)(weapon->addr + (renderweapon.tex_y
+						* weapon->line_length + renderweapon.tex_x
+						* (weapon->bpp / 8)));
 			if ((renderweapon.color & 0x00FFFFFF) != 0)
-				put_pixel_to_image(img_data, start_x + renderweapon.x, renderweapon.start_y + renderweapon.y, renderweapon.color, line_length, bits_per_pixel);
+				put_pixel_to_image(img_data, start_x
+					+ renderweapon.x, renderweapon.start_y
+					+ renderweapon.y, renderweapon.color,
+					line_length, bits_per_pixel);
 			renderweapon.x++;
 		}
 		renderweapon.y++;

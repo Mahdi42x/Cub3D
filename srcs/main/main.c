@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 15:56:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/03 15:42:23 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/06 17:55:36 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	main(int argc, char	*argv[])
 		fprintf(stderr, "Error: Failed to initialize MiniLibX.\n");
 		return (1);
 	}
+	init_data(&data);
 	parse_cub_file(&data, argv[1]);
 	if (!data.map || !data.map[0])
 	{

@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:33:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/03 15:44:03 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/06 17:23:31 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,19 +69,13 @@ char	**allocate_visited(int rows, int cols)
 
 	visited = malloc(rows * sizeof(char *));
 	if (!visited)
-	{
-		perror("Error allocating memory for visited map");
-		exit(EXIT_FAILURE);
-	}
+		free_and_exit(visited, "allocating memory for visited map.", 1);
 	i = 0;
 	while (i < rows)
 	{
 		visited[i] = calloc(cols, sizeof(char));
 		if (!visited[i])
-		{
-			perror("Error allocating visited row");
-			exit(EXIT_FAILURE);
-		}
+			free_and_exit(visited, "allocating visited row.", 1);
 		i++;
 	}
 	return (visited);
@@ -92,17 +86,11 @@ int	check_map_validity(char **map, int *rows, int *cols)
 	*rows = 0;
 	*cols = 0;
 	if (!map || !map[0])
-	{
-		fprintf(stderr, "Error: The map is missing or empty.\n");
-		return (0);
-	}
+		free_and_exit(NULL, "The map is missing or empty.", 0);
 	while (map[*rows])
 		(*rows)++;
 	if (*rows == 0)
-	{
-		fprintf(stderr, "Error: The map contains no valid data.\n");
-		return (0);
-	}
+		free_and_exit(NULL, "The map contains no valid data.", 0);
 	*cols = strlen(map[0]);
 	return (1);
 }
