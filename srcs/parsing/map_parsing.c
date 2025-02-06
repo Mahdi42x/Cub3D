@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:18:31 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/06 13:44:20 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/06 19:30:31 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,11 @@ char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 				data->player.x = parsemap.x + 0.5;
 				data->player.y = rows + 0.5;
 				set_player_orientation(parsemap.c, &data->player);
+				if (data->player.foundplayer != 1)
+				{
+					printf("Error: To many spawns.\n");
+					exit(EXIT_FAILURE);
+				}
 				player_found = 1;
 				map[rows][parsemap.x] = '0';
 			}
@@ -112,30 +117,4 @@ char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 		exit(EXIT_FAILURE);
 	}
 	return (map);
-}
-
-void	find_player(char	**map, t_player *player)
-{
-	int	y;
-	int	x;
-
-	y = 0;
-	while (map[y])
-	{
-		x = 0;
-		while (map[y][x])
-		{
-			if (map[y][x] == 'N'
-				|| map[y][x] == 'S' || map[y][x] == 'E' || map[y][x] == 'W')
-			{
-				player->x = x + 0.5;
-				player->y = y + 0.5;
-				set_player_orientation(map[y][x], player);
-				map[y][x] = '0';
-				return ;
-			}
-			x++;
-		}
-		y++;
-	}
 }

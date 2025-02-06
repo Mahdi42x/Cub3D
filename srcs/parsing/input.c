@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:12:56 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/03 15:42:55 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/06 18:01:17 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ int	handle_keypress(int key, t_data *data)
 {
 	if (key == KEY_ESC)
 	{
+		
 		mlx_destroy_window(data->mlx, data->win);
 		exit(0);
 	}

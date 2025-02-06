@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/03 15:45:37 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/06 19:24:56 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef struct s_player{
 	double	plane_x;
 	double	plane_y;
 	double	angle;
+	int		foundplayer;
 }	t_player;
 
 typedef struct s_texture {
@@ -186,5 +187,7 @@ void	print_texture_paths(t_data *data);
 // void	free_map(char **map, int height);
 // void	free_all(t_data *data);
 // void	free_all_exit(t_data *data);
-
+void	free_and_exit(void *ptr, const char *error_msg, int exit_code);
+void	init_data(t_data *data);
+int		exit_game(t_data *data);
 #endif
