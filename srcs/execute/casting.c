@@ -99,6 +99,9 @@ void	raycasting(t_data *data, char *img_data,
 		t_texture	*tex;
 		double		wall_x;
 		int			tex_x;
+
+		if (perp_wall_dist < 0.0001)
+            		perp_wall_dist = 0.0001;
 		line_height = (int)(WINDOW_HEIGHT / perp_wall_dist);
 		draw_start = -line_height / 2 + WINDOW_HEIGHT / 2;
 		if (draw_start < 0)
