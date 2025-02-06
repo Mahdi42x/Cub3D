@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:18:31 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/02 17:20:43 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/06 13:44:20 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ char	**parse_map(int fd)
 	return (map);
 }
 
-
 char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 {
 	char		**map;
@@ -91,7 +90,8 @@ char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 		while (map[rows][parsemap.x])
 		{
 			parsemap.c = map[rows][parsemap.x];
-			if (parsemap.c == 'N' || parsemap.c == 'S' || parsemap.c == 'E' || parsemap.c == 'W')
+			if (parsemap.c == 'N' || parsemap.c == 'S'
+				|| parsemap.c == 'E' || parsemap.c == 'W')
 			{
 				data->player.x = parsemap.x + 0.5;
 				data->player.y = rows + 0.5;
@@ -107,7 +107,8 @@ char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 	}
 	if (!player_found)
 	{
-		fprintf(stderr, "Error: No player spawn (N, E, S, W) found in the map.\n");
+		fprintf(stderr,
+			"Error: No player spawn (N, E, S, W) found in the map.\n");
 		exit(EXIT_FAILURE);
 	}
 	return (map);

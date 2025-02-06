@@ -6,14 +6,14 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:48:41 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/02 17:51:12 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/03 15:44:16 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3D.h"
 
-
-void	put_pixel_to_image(char	*img_data, int x, int y, int color, int line_length, int bits_per_pixel)
+void	put_pixel_to_image(char	*img_data, int x, int y, int color,
+			int line_length, int bits_per_pixel)
 {
 	char	*pixel;
 
@@ -21,7 +21,8 @@ void	put_pixel_to_image(char	*img_data, int x, int y, int color, int line_length
 	*(unsigned int *)pixel = color;
 }
 
-void	draw_minimap(t_data *data, char	*img_data, int line_length, int bits_per_pixel)
+void	draw_minimap(t_data *data, char	*img_data,
+	int line_length, int bits_per_pixel)
 {
 	int				scale;
 	int				radius;
@@ -48,7 +49,8 @@ void	draw_minimap(t_data *data, char	*img_data, int line_length, int bits_per_pi
 				while (drawminimap.j < scale)
 				{
 					put_pixel_to_image(img_data, x * scale + drawminimap.i,
-						y * scale + drawminimap.j, drawminimap.color, line_length, bits_per_pixel);
+						y * scale + drawminimap.j, drawminimap.color,
+						line_length, bits_per_pixel);
 					drawminimap.j++;
 				}
 				drawminimap.i++;
@@ -65,7 +67,8 @@ void	draw_minimap(t_data *data, char	*img_data, int line_length, int bits_per_pi
 		drawminimap.dx = -radius;
 		while (drawminimap.dx <= radius)
 		{
-			if (drawminimap.dx * drawminimap.dx + drawminimap.dy * drawminimap.dy <= radius * radius)
+			if (drawminimap.dx * drawminimap.dx + drawminimap.dy
+				* drawminimap.dy <= radius * radius)
 			{
 				put_pixel_to_image(img_data,
 					drawminimap.player_x + drawminimap.dx,
@@ -77,13 +80,17 @@ void	draw_minimap(t_data *data, char	*img_data, int line_length, int bits_per_pi
 		drawminimap.dy++;
 	}
 	drawminimap.tip_length = 10.0;
-	drawminimap.tip_x = drawminimap.player_x + (int)(drawminimap.tip_length * data->player.dir_x);
-	drawminimap.tip_y = drawminimap.player_y + (int)(drawminimap.tip_length * data->player.dir_y);
-	draw_line(img_data, drawminimap.player_x, drawminimap.player_y, drawminimap.tip_x, drawminimap.tip_y,
+	drawminimap.tip_x = drawminimap.player_x
+		+ (int)(drawminimap.tip_length * data->player.dir_x);
+	drawminimap.tip_y = drawminimap.player_y
+		+ (int)(drawminimap.tip_length * data->player.dir_y);
+	draw_line(img_data, drawminimap.player_x,
+		drawminimap.player_y, drawminimap.tip_x, drawminimap.tip_y,
 		0xFFFFFF, line_length, bits_per_pixel);
 }
 
-void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int line_length, int bits_per_pixel)
+void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color,
+			int line_length, int bits_per_pixel)
 {
 	int			dx;
 	int			dy;
@@ -109,7 +116,8 @@ void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int li
 	drawline.err = dx + dy;
 	while (1)
 	{
-		put_pixel_to_image(img_data, x0, y0, color, line_length, bits_per_pixel);
+		put_pixel_to_image(img_data, x0, y0, color,
+			line_length, bits_per_pixel);
 		if (x0 == x1 && y0 == y1)
 		{
 			break ;
@@ -128,7 +136,8 @@ void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int li
 	}
 }
 
-void	draw_crosshair(char	*img_data, int line_length, int bits_per_pixel, int window_width, int window_height)
+void	draw_crosshair(char	*img_data, int line_length,
+	int bits_per_pixel, int window_width, int window_height)
 {
 	int	center_x;
 	int	center_y;	

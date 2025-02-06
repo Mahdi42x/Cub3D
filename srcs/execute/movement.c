@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:45:09 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/02 17:45:45 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/02 22:20:29 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,9 @@ void	move_player(t_data *data, int key)
 		move_y += player->plane_y * PLAYER_SPEED;
 	}
 	if (!world_map(data, (int)(player->x + move_x), (int)(player->y)))
-	{
 		player->x += move_x;
-	}
 	if (!world_map(data, (int)(player->x), (int)(player->y + move_y)))
-	{
 		player->y += move_y;
-	}
 }
 
 void	rotate_player(t_data *data, int key)

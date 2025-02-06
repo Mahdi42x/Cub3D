@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/02 17:24:51 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/03 15:45:37 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,13 @@ typedef struct s_renderweapon {
 	int			x;
 }	t_renderweapon;
 
+typedef struct s_flood
+{
+    int     rows;
+    int     cols;
+    char    **visited;
+}   t_flood;
+
 typedef struct s_drawminimap {
 	int		color;
 	int		i;
@@ -126,7 +133,11 @@ void	find_player(char **map, t_player *player);
 /*		 						 Fload fill				 					*/
 int		has_player(char **map);
 int		is_map_enclosed(char **map);
-int		flood_fill(char **map, int x, int y, int rows, int cols, char **visited);
+int		flood_fill(char **map, int x, int y, t_flood *flood);
+int		check_map_validity(char **map, int *rows, int *cols);
+int		flood_fill(char **map, int x, int y, t_flood *flood);
+void	free_visited(char **visited, int rows);
+char	**allocate_visited(int rows, int cols);
 
 /*		 						 File Parsing				 				*/
 void	parse_cub_file(t_data *data, const char *file_path);
@@ -154,13 +165,13 @@ void	rotate_player(t_data *data, int key);
 int		world_map(t_data *data, int x, int y);
 /*		 						 Casting				 					*/
 void	raycasting(t_data *data, char *img_data,
-				int line_length, int bits_per_pixel);
+			int line_length, int bits_per_pixel);
 int		render(void *param);
 void	render_weapon(t_data *data, char *img_data,
-		int line_length, int bits_per_pixel);
+			int line_length, int bits_per_pixel);
 /*		 						 Draw				 						*/
 void	put_pixel_to_image(char *img_data, int x, int y, int color,
-				int line_length, int bits_per_pixel);
+			int line_length, int bits_per_pixel);
 void	draw_minimap(t_data *data, char *img_data,
 			int line_length, int bits_per_pixel);
 void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color,
@@ -169,4 +180,11 @@ void	draw_crosshair(char *img_data, int line_length,
 			int bits_per_pixel, int window_width, int window_height);
 void	print_texture_paths(t_data *data);
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
+/*free*/
+// void	free_textures(t_data *data);
+// void	cleanup(t_data *data);
+// void	free_map(char **map, int height);
+// void	free_all(t_data *data);
+// void	free_all_exit(t_data *data);
+
 #endif

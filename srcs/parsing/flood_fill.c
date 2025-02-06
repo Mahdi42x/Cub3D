@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:33:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/02 17:50:44 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/03 15:44:03 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ int	has_player(char **map)
 		x = 0;
 		while (map[y][x])
 		{
-			if (map[y][x] == 'N' || map[y][x] == 'E' || map[y][x] == 'S' || map[y][x] == 'W')
+			if (map[y][x] == 'N' || map[y][x] == 'E'
+				|| map[y][x] == 'S' || map[y][x] == 'W')
 				return (1);
 			x++;
 		}
@@ -34,18 +35,18 @@ int	has_player(char **map)
 	return (0);
 }
 
-int	flood_fill(char	**map, int x, int y, int rows, int cols, char	**visited)
+int	flood_fill(char **map, int x, int y, t_flood *flood)
 {
-	if (x < 0 || y < 0 || x >= cols
-		|| y >= rows || map[y][x] == '1' || visited[y][x])
+	if (x < 0 || y < 0 || x >= flood->cols
+		|| y >= flood->rows || map[y][x] == '1' || flood->visited[y][x])
 		return (0);
-	if (x == 0 || y == 0 || x == cols - 1 || y == rows - 1)
+	if (x == 0 || y == 0 || x == flood->cols - 1 || y == flood->rows - 1)
 		return (1);
-	visited[y][x] = 1;
-	return (flood_fill(map, x + 1, y, rows, cols, visited)
-		|| flood_fill(map, x - 1, y, rows, cols, visited)
-		|| flood_fill(map, x, y + 1, rows, cols, visited)
-		|| flood_fill(map, x, y - 1, rows, cols, visited));
+	flood->visited[y][x] = 1;
+	return (flood_fill(map, x + 1, y, flood)
+		|| flood_fill(map, x - 1, y, flood)
+		|| flood_fill(map, x, y + 1, flood)
+		|| flood_fill(map, x, y - 1, flood));
 }
 
 void	free_visited(char **visited, int rows)
@@ -103,35 +104,5 @@ int	check_map_validity(char **map, int *rows, int *cols)
 		return (0);
 	}
 	*cols = strlen(map[0]);
-	return (1);
-}
-
-int	is_map_enclosed(char **map)
-{
-	int		rows;
-	int		cols;
-	int		y;
-	int		x;
-	int		result;
-
-	if (!check_map_validity(map, &rows, &cols))
-		return (0);
-	y = 0;
-	while (y < rows)
-	{
-		x = 0;
-		while (x < cols)
-		{
-			if (map[y][x] == '0' || map[y][x] == 'N' || map[y][x] == 'E' || map[y][x] == 'S' || map[y][x] == 'W')
-			{
-				result = flood_fill(map, x, y, rows, cols, allocate_visited(rows, cols));
-				free_visited(allocate_visited(rows, cols), rows);
-				return (!result);
-			}
-			x++;
-		}
-		y++;
-	}
-	free_visited(allocate_visited(rows, cols), rows);
 	return (1);
 }
