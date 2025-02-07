@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:33:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/06 17:23:31 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/07 17:04:47 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,8 @@ char	**allocate_visited(int rows, int cols)
 	{
 		visited[i] = calloc(cols, sizeof(char));
 		if (!visited[i])
-			free_and_exit(visited, "allocating visited row.", 1);
+			free(visited);
+			//free_and_exit(visited, "allocating visited row.", 1);
 		i++;
 	}
 	return (visited);

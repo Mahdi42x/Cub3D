@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/06 19:24:56 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/07 16:52:09 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,28 @@ typedef struct s_texture {
 	int		endian;
 }	t_texture;
 
+typedef struct s_ray {
+	double	camera_x;
+	double	dir_x;
+	double	dir_y;
+	double	side_x;
+	double	side_y;
+	double	delta_x;
+	double	delta_y;
+	double	perp_dist;
+	int		map_y;
+	int		map_x;
+	int		step_x;
+	int		step_y;
+	int		hit;
+	int		side;
+}	
+
+
+
+
+t_ray;
+
 // 3: NO, 2: SO, 1: WE, 0: EA
 typedef struct s_data {
 	t_texture	weapon_texture;
@@ -106,10 +128,10 @@ typedef struct s_renderweapon {
 
 typedef struct s_flood
 {
-    int     rows;
-    int     cols;
-    char    **visited;
-}   t_flood;
+	int		rows;
+	int		cols;
+	char	**visited;
+}t_flood;
 
 typedef struct s_drawminimap {
 	int		color;
@@ -131,6 +153,19 @@ char	**parse_map(int fd);
 char	**parse_map_from_line(char *first_map_line, int fd, t_data *data);
 void	find_player(char **map, t_player *player);
 
+void	handle_texture(char *line, t_data *data);
+void	handle_color(char *line, t_data *data);
+void	parse_maps(t_data *data, char *line, int fd);
+char	**parse_map_from_line(char *first_map_line, int fd, t_data *data);
+
+/*		 						 File Parsing				 				*/
+void	parse_cub_file(t_data *data, const char *file_path);
+void	parse_cub_file_helper(t_data *data);
+int		is_cub_file(char *file_path);
+int		parse_color(char *str, int i);
+void	test_texture_loading(void *mlx, char *path, const char *label);
+void	test_all_textures(t_data *data);
+
 /*		 						 Fload fill				 					*/
 int		has_player(char **map);
 int		is_map_enclosed(char **map);
@@ -140,19 +175,13 @@ int		flood_fill(char **map, int x, int y, t_flood *flood);
 void	free_visited(char **visited, int rows);
 char	**allocate_visited(int rows, int cols);
 
-/*		 						 File Parsing				 				*/
-void	parse_cub_file(t_data *data, const char *file_path);
-int		is_cub_file(char *file_path);
-int		parse_color(char *str, int i);
-void	test_texture_loading(void *mlx, char *path, const char *label);
-void	test_all_textures(t_data *data);
-
 /*		 						 Load				 						*/
 void	load_weapon_texture(t_data *data, char *path);
 void	load_texture(t_data *data, t_texture *texture, char *line);
 
 /*		 						 Init				 						*/
 void	set_player_orientation(char direction, t_player *player);
+void	init_data(t_data *data);
 
 /*		 						 Input				 						*/
 int		handle_focus(int event, void *param);
@@ -188,6 +217,15 @@ void	print_texture_paths(t_data *data);
 // void	free_all(t_data *data);
 // void	free_all_exit(t_data *data);
 void	free_and_exit(void *ptr, const char *error_msg, int exit_code);
-void	init_data(t_data *data);
 int		exit_game(t_data *data);
+void	exit_error(const char *error_msg, int exit_code);
+void	validate_player_spawn(int player_found);
+void	check_player_spawn(char *row, int rows, t_data *data, int *player_found);
+char	**realloc_map(char **map, int rows);
+void	process_map_line(char ***map, char *line, int rows, t_data *data, int *player_found);
+void	freeimg(t_data	*data);
+void	cleanup_and_exit(t_data *data);
+
+
+
 #endif

@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:12:56 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/06 18:01:17 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/07 17:15:15 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,20 @@ int	handle_mouse(int x, __attribute__((unused)) int y, t_data *data)
 	return (0);
 }
 
-/* Handle keyboard input */
 int	handle_keypress(int key, t_data *data)
 {
+	int	i;
+
+	i = 0;
 	if (key == KEY_ESC)
 	{
-		
-		mlx_destroy_window(data->mlx, data->win);
-		exit(0);
+		while (data->map[i] != NULL)
+		{
+			free(data->map[i]);
+			i++;
+		}
+		free(data->map);
+		exit_game(data);
 	}
 	if (key == KEY_W || key == KEY_A || key == KEY_S || key == KEY_D
 		|| key == KEY_UP || key == KEY_DOWN || key == KEY_LEFT

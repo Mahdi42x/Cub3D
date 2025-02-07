@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 18:30:24 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/02 19:03:21 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/07 16:57:43 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,14 @@ int	is_map_enclosed(char **map)
 	int		x;
 	int		y;
 	int		result;
+	char	**visited;
 
 	if (!check_map_validity(map, &rows, &cols))
 		return (0);
 	if (!find_starting_point(map, rows, cols, &x, &y))
-	{
-		free_visited(allocate_visited(rows, cols), rows);
 		return (1);
-	}
-	result = flood_fill(map, x, y, &(t_flood){rows, cols, 
-			allocate_visited(rows, cols)});
-	free_visited(allocate_visited(rows, cols), rows);
+	visited = allocate_visited(rows, cols);
+	result = flood_fill(map, x, y, &(t_flood){rows, cols, visited});
+	free_visited(visited, rows);
 	return (!result);
 }

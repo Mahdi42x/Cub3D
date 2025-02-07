@@ -6,24 +6,24 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:48:41 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/06 18:33:11 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/07 14:26:59 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3D.h"
 
-void put_pixel_to_image(char *img_data, int x, int y, int color,
-                        int line_length, int bits_per_pixel)
+void	put_pixel_to_image(char *img_data, int x, int y, int color, 
+						int line_length, int bits_per_pixel)
 {
-    if (x < 0 || y < 0) // Prevent negative access
-        return;
-    if (x >= line_length / (bits_per_pixel / 8)) // Prevent overflow in width
-        return;
-    
-    char *pixel = img_data + (y * line_length + x * (bits_per_pixel / 8));
-    *(unsigned int *)pixel = color;
-}
+	char	*pixel;
 
+	if (x < 0 || y < 0)
+		return ;
+	if (x >= line_length / (bits_per_pixel / 8))
+		return ;
+	pixel = img_data + (y * line_length + x * (bits_per_pixel / 8));
+	*(unsigned int *)pixel = color;
+}
 
 void	draw_minimap(t_data *data, char	*img_data,
 	int line_length, int bits_per_pixel)

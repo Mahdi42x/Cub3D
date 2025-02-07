@@ -3,48 +3,60 @@
 /*                                                        :::      ::::::::   */
 /*   movement.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:45:09 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/02 22:20:29 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/07 17:26:01 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3D.h"
 
-void	move_player(t_data *data, int key)
+void	calculate_movement(t_player *player, int key,
+	double *move_x, double *move_y)
 {
-	t_player	*player;
-	double		move_x;
-	double		move_y;
-
-	player = &data->player;
-	move_x = 0.0;
-	move_y = 0.0;
+	*move_x = 0.0;
+	*move_y = 0.0;
 	if (key == KEY_W || key == KEY_UP)
 	{
-		move_x += player->dir_x * PLAYER_SPEED;
-		move_y += player->dir_y * PLAYER_SPEED;
+		*move_x += player->dir_x * PLAYER_SPEED;
+		*move_y += player->dir_y * PLAYER_SPEED;
 	}
 	if (key == KEY_S || key == KEY_DOWN)
 	{
-		move_x -= player->dir_x * PLAYER_SPEED;
-		move_y -= player->dir_y * PLAYER_SPEED;
+		*move_x -= player->dir_x * PLAYER_SPEED;
+		*move_y -= player->dir_y * PLAYER_SPEED;
 	}
 	if (key == KEY_A)
 	{
-		move_x -= player->plane_x * PLAYER_SPEED;
-		move_y -= player->plane_y * PLAYER_SPEED;
+		*move_x -= player->plane_x * PLAYER_SPEED;
+		*move_y -= player->plane_y * PLAYER_SPEED;
 	}
 	if (key == KEY_D)
 	{
-		move_x += player->plane_x * PLAYER_SPEED;
-		move_y += player->plane_y * PLAYER_SPEED;
+		*move_x += player->plane_x * PLAYER_SPEED;
+		*move_y += player->plane_y * PLAYER_SPEED;
 	}
+}
+
+void	apply_movement(t_data *data, double move_x, double move_y)
+{
+	t_player	*player;
+
+	player = &data->player;
 	if (!world_map(data, (int)(player->x + move_x), (int)(player->y)))
 		player->x += move_x;
 	if (!world_map(data, (int)(player->x), (int)(player->y + move_y)))
 		player->y += move_y;
+}
+
+void	move_player(t_data *data, int key)
+{
+	double	move_x;
+	double	move_y;
+
+	calculate_movement(&data->player, key, &move_x, &move_y);
+	apply_movement(data, move_x, move_y);
 }
 
 void	rotate_player(t_data *data, int key)

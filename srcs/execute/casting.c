@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 16:48:15 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/06 18:44:32 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/07 17:02:58 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,36 +15,33 @@
 void	raycasting(t_data *data, char *img_data,
 	int line_length, int bits_per_pixel)
 {
-	int			x;
-	double		camera_x;
-	double		ray_dir_x;
-	double		ray_dir_y;
-	int			map_x;
-	int			map_y;
-	double		side_dist_x;
-	double		side_dist_y;
-	double		delta_dist_x;
-	double		delta_dist_y;
-	double		perp_wall_dist;
-	int			step_x;
-	int			step_y;
-	int			hit;
-	int			side;
-	int			line_height;
-	int			draw_start;
-	int			draw_end;
-	int			tex_num;
-	t_texture	*tex;
-	double		wall_x;
-	int			tex_x;
-	int y;
-	int	d;
-	int	tex_y;
-	int	color;
+	int	x;
 
 	x = 0;
 	while (x < WINDOW_WIDTH)
 	{
+		double		camera_x;
+		double		ray_dir_x;
+		double		ray_dir_y;
+		int			map_x;
+		int			map_y;
+		double		side_dist_x;
+		double		side_dist_y;
+		double		delta_dist_x;
+		double		delta_dist_y;
+		double		perp_wall_dist;
+		int			step_x;
+		int			step_y;
+		int			hit;
+		int			side;
+		int			line_height;
+		int			draw_start;
+		int			draw_end;
+		int			tex_num;
+		t_texture	*tex;
+		double		wall_x;
+		int			tex_x;
+
 		camera_x = 2 * x / (double)WINDOW_WIDTH - 1;
 		ray_dir_x = data->player.dir_x + data->player.plane_x * camera_x;
 		ray_dir_y = data->player.dir_y + data->player.plane_y * camera_x;
@@ -102,8 +99,6 @@ void	raycasting(t_data *data, char *img_data,
 			perp_wall_dist = (map_y - data->player.y + (1 - step_y)
 					/ 2) / ray_dir_y;
 		}
-		if (perp_wall_dist < 0.0001)
-			perp_wall_dist = 0.0001;
 		line_height = (int)(WINDOW_HEIGHT / perp_wall_dist);
 		draw_start = -line_height / 2 + WINDOW_HEIGHT / 2;
 		if (draw_start < 0)
@@ -156,6 +151,8 @@ void	raycasting(t_data *data, char *img_data,
 		{
 			tex_x = tex->width - tex_x - 1;
 		}
+		int y;
+
 		y = 0;
 		while (y < draw_start)
 		{
@@ -166,6 +163,9 @@ void	raycasting(t_data *data, char *img_data,
 		y = draw_start;
 		while (y < draw_end)
 		{
+			int	d;
+			int	tex_y;
+			int	color;
 
 			d = (y * 256) - (WINDOW_HEIGHT * 128) + (line_height * 128);
 			tex_y = ((d * tex->height) / line_height) / 256;
@@ -205,7 +205,7 @@ int	render(void *param)
 	int		endian;
 	char	*img_data;
 	t_data	*data;
-	
+
 	data = (t_data *)param;
 	data->img = mlx_new_image(data->mlx, WINDOW_WIDTH, WINDOW_HEIGHT);
 	img_data = mlx_get_data_addr(data->img,
