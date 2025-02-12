@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:12:56 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/07 17:15:15 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/11 16:15:40 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,19 +58,46 @@ int	handle_mouse(int x, __attribute__((unused)) int y, t_data *data)
 	return (0);
 }
 
+void	free_textures(t_data *data)
+{
+	free(data->map);
+	if (data->mlx)
+	{
+		if (data->textures[0].img)
+			mlx_destroy_image(data->mlx, data->textures[0].img);
+		if (data->textures[1].img)
+			mlx_destroy_image(data->mlx, data->textures[1].img);
+		if (data->textures[2].img)
+			mlx_destroy_image(data->mlx, data->textures[2].img);
+		if (data->textures[3].img)
+			mlx_destroy_image(data->mlx, data->textures[3].img);
+		if (data->weapon_texture.img)
+			mlx_destroy_image(data->mlx, data->weapon_texture.img);
+	}
+	free(data->no_path);
+	free(data->so_path);
+	free(data->we_path);
+	free(data->ea_path);
+	data->map = NULL;
+}
+
 int	handle_keypress(int key, t_data *data)
 {
 	int	i;
 
-	i = 0;
 	if (key == KEY_ESC)
 	{
-		while (data->map[i] != NULL)
+		if (data->map)
 		{
-			free(data->map[i]);
-			i++;
+			i = 0;
+			while (data->map[i])
+			{
+				free(data->map[i]);
+				data->map[i] = NULL;
+				i++;
+			}
+			free_textures(data);
 		}
-		free(data->map);
 		exit_game(data);
 	}
 	if (key == KEY_W || key == KEY_A || key == KEY_S || key == KEY_D

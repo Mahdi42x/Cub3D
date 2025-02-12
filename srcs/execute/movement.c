@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   movement.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:45:09 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/07 17:26:01 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/11 16:24:09 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,15 @@ void	move_player(t_data *data, int key)
 	double	move_x;
 	double	move_y;
 
-	calculate_movement(&data->player, key, &move_x, &move_y);
-	apply_movement(data, move_x, move_y);
+	move_x = 0.0;
+	move_y = 0.0;
+	if (key == KEY_LEFT || key == KEY_RIGHT)
+		rotate_player(data, key);
+	else
+	{
+		calculate_movement(&data->player, key, &move_x, &move_y);
+		apply_movement(data, move_x, move_y);
+	}
 }
 
 void	rotate_player(t_data *data, int key)
@@ -69,7 +76,7 @@ void	rotate_player(t_data *data, int key)
 	player = &data->player;
 	old_dir_x = player->dir_x;
 	old_plane_x = player->plane_x;
-	if (key == KEY_LEFT)
+	if (key == KEY_RIGHT)
 		rot = -PLAYER_ROT_SPEED;
 	else
 		rot = PLAYER_ROT_SPEED;

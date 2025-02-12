@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:35:41 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/07 16:43:40 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/11 16:02:53 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,3 @@ void	parse_cub_file_helper(t_data *data)
 	}
 	set_map_width(data);
 }
-
-
-
