@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:41:16 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/03 15:43:33 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/13 18:08:31 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,12 @@ void	load_texture(t_data *data, t_texture *texture, char	*line)
 	newline = strchr(line, '\n');
 	if (newline)
 		*newline = '\0';
+	// Add this check to ensure line is not empty
+	if (*line == '\0')
+	{
+		fprintf(stderr, "Error: Missing texture path.\n");
+		exit(EXIT_FAILURE);
+	}
 	texture->img = mlx_xpm_file_to_image(data->mlx,
 			line, &texture->width, &texture->height);
 	if (!texture->img)

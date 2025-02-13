@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 17:04:22 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/11 16:06:01 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/13 16:07:27 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,19 @@ void	free_and_exit(void *ptr, const char *error_msg, int exit_code)
 	exit(exit_code);
 }
 
-void freeimg(t_data *data)
+void	freeimg(t_data *data)
 {
-	for (int i = 0; i < 4; i++)
+	int	i;
+
+	i = 0;
+	while (i < 4)
 	{
 		if (data->textures[i].img)
 		{
 			mlx_destroy_image(data->mlx, data->textures[i].img);
 			data->textures[i].img = NULL;
 		}
+		i++;
 	}
 	if (data->weapon_texture.img)
 	{

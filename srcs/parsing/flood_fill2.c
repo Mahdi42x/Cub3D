@@ -6,13 +6,14 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 18:30:24 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/07 16:57:43 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/13 17:48:37 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3D.h"
 
-int	find_starting_point(char **map, int rows, int cols, int *x, int *y)
+int	find_starting_point(char **map, int rows, int cols, 
+		int *x, int *y)
 {
 	*y = 0;
 	while (*y < rows)

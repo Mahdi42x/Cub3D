@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/07 16:52:09 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/13 18:14:05 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,26 +64,27 @@ typedef struct s_texture {
 }	t_texture;
 
 typedef struct s_ray {
-	double	camera_x;
-	double	dir_x;
-	double	dir_y;
-	double	side_x;
-	double	side_y;
-	double	delta_x;
-	double	delta_y;
-	double	perp_dist;
-	int		map_y;
-	int		map_x;
-	int		step_x;
-	int		step_y;
-	int		hit;
-	int		side;
-}	
-
-
-
-
-t_ray;
+    double camera_x;
+    double ray_dir_x;
+    double ray_dir_y;
+    int map_x;
+    int map_y;
+    double side_dist_x;
+    double side_dist_y;
+    double delta_dist_x;
+    double delta_dist_y;
+    double perp_wall_dist;
+    int step_x;
+    int step_y;
+    int hit;
+    int side;
+    int line_height;
+    int draw_start;
+    int draw_end;
+    int tex_num;
+    double wall_x;
+    int tex_x;
+} t_ray;
 
 // 3: NO, 2: SO, 1: WE, 0: EA
 typedef struct s_data {
@@ -103,6 +104,8 @@ typedef struct s_data {
 	int			map_height;
 	int			map_width;
 	void		*img;
+	int			line_height;
+	t_ray		*ray;
 }	t_data;
 
 typedef struct s_parsemap {
@@ -217,7 +220,7 @@ void	print_texture_paths(t_data *data);
 // void	free_all(t_data *data);
 // void	free_all_exit(t_data *data);
 void	free_and_exit(void *ptr, const char *error_msg, int exit_code);
-int		exit_game(t_data *data);
+void	exit_game(t_data *data);
 void	exit_error(const char *error_msg, int exit_code);
 void	validate_player_spawn(int player_found);
 void	check_player_spawn(char *row, int rows, t_data *data, int *player_found);
@@ -225,7 +228,8 @@ char	**realloc_map(char **map, int rows);
 void	process_map_line(char ***map, char *line, int rows, t_data *data, int *player_found);
 void	freeimg(t_data	*data);
 void	cleanup_and_exit(t_data *data);
-
-
+void	free_textures(t_data *data);
+void	free_mapx(t_data	*data);
+int	exit_x(t_data *data);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:18:31 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/07 16:43:47 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/13 15:28:58 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ char	**parse_map(int fd)
 	}
 	return (map);
 }
-
 
 void	parse_cub_file(t_data *data, const char *file_path)
 {

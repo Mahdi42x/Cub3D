@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:42:53 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/07 16:43:39 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/13 16:27:11 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,3 @@ void	init_data(t_data *data)
 	data->ceiling_color = 0;
 	data->floor_color = 0;
 }
-
-
-
-
-
-
-

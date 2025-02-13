@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 15:56:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/11 16:02:36 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/13 16:31:25 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ void	setup_window_and_hooks(t_data *data)
 	mlx_hook(data->win, 6, 1L << 6, handle_mouse, data);
 	mlx_hook(data->win, 9, 0, handle_focus, data);
 	mlx_hook(data->win, 10, 0, handle_focus, data);
+	mlx_hook(data->win, 17, 0, exit_x, data);
 	mlx_loop_hook(data->mlx, render, data);
 }
 
