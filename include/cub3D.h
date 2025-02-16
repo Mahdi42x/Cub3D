@@ -6,7 +6,7 @@
 /*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/13 18:14:05 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/16 18:41:29 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,27 +86,6 @@ typedef struct s_ray {
     int tex_x;
 } t_ray;
 
-// 3: NO, 2: SO, 1: WE, 0: EA
-typedef struct s_data {
-	t_texture	weapon_texture;
-	t_player	player;
-	t_texture	textures[4];
-	void		*mlx;
-	void		*win;
-	char		**map;
-	char		*no_path;
-	char		*so_path;
-	char		*we_path;
-	char		*ea_path;
-	int			**buffer;
-	int			floor_color;
-	int			ceiling_color;
-	int			map_height;
-	int			map_width;
-	void		*img;
-	int			line_height;
-	t_ray		*ray;
-}	t_data;
 
 typedef struct s_parsemap {
 	size_t		len;
@@ -148,6 +127,37 @@ typedef struct s_drawminimap {
 	int		tip_y;
 	double	tip_length;
 }	t_drawminimap;
+
+typedef struct s_img_data {
+    char				*img_data;
+    int 				line_length;
+    int 				bits_per_pixel;
+	t_renderweapon		*rw;
+}	t_img_data;
+
+// 3: NO, 2: SO, 1: WE, 0: EA
+typedef struct s_data {
+	t_texture	weapon_texture;
+	t_player	player;
+	t_texture	textures[4];
+	void		*mlx;
+	void		*win;
+	char		**map;
+	char		*no_path;
+	char		*so_path;
+	char		*we_path;
+	char		*ea_path;
+	int			**buffer;
+	int			floor_color;
+	int			ceiling_color;
+	int			map_height;
+	int			map_width;
+	void		*img;
+	int			line_height;
+	t_ray		*ray;
+	t_img_data	*img_data;
+	t_renderweapon		*rw;
+}	t_data;
 
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
 /*		 						 PARSING				 					*/
@@ -197,8 +207,7 @@ void	move_player(t_data *data, int key);
 void	rotate_player(t_data *data, int key);
 int		world_map(t_data *data, int x, int y);
 /*		 						 Casting				 					*/
-void	raycasting(t_data *data, char *img_data,
-			int line_length, int bits_per_pixel);
+void	raycasting(t_data *data, t_img_data *img);
 int		render(void *param);
 void	render_weapon(t_data *data, char *img_data,
 			int line_length, int bits_per_pixel);
@@ -209,8 +218,7 @@ void	draw_minimap(t_data *data, char *img_data,
 			int line_length, int bits_per_pixel);
 void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color,
 			int line_length, int bits_per_pixel);
-void	draw_crosshair(char *img_data, int line_length,
-			int bits_per_pixel, int window_width, int window_height);
+void	draw_crosshair(char *img_data, int line_length, int bits_per_pixel, int window_width, int window_height);
 void	print_texture_paths(t_data *data);
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
 /*free*/
