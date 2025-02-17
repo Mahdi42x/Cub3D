@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   file_parsing2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 14:21:18 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/07 14:21:31 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/17 16:43:36 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/cub3D.h"
+hdihdi.f            50hdi   hihi.f        163047hi #include "../../include/cub3D.h"
 
 int	is_cub_file(char *file_path)
 {

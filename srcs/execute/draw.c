@@ -6,7 +6,7 @@
 /*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:48:41 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/16 18:44:35 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/17 16:44:18 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ void	draw_minimap_tile(t_data *data, char *img_data, int x, int y, int scale, in
 		j = 0;
 		while (j < scale)
 		{
-			put_pixel_to_image(img_data, x * scale + i, y * scale + j, color, line_length, bits_per_pixel);
+			put_pixel_to_image(img_data, x * scale + i, y
+				* scale + j, color, line_length, bits_per_pixel);
 			j++;
 		}
 		i++;
@@ -58,10 +59,13 @@ void	draw_player_on_minimap(t_data *data, t_img_data *img, int scale)
 {
 	int		dx;
 	int		dy;
-	int		radius = 5;
-	int		player_x = (int)(data->player.x * scale);
-	int		player_y = (int)(data->player.y * scale);
+	int		radius;
+	int		player_x;
+	int		player_y;
 
+	player_x = (int)(data->player.x * scale);
+	player_y = (int)(data->player.y * scale);
+	radius = 5;
 	dy = -radius;
 	while (dy <= radius)
 	{
@@ -76,18 +80,24 @@ void	draw_player_on_minimap(t_data *data, t_img_data *img, int scale)
 	}
 }
 
-void	draw_minimap(t_data *data, char *img_data, int line_length, int bits_per_pixel)
+void	draw_minimap(t_data *data, char *img_data,
+	int line_length, int bits_per_pixel)
 {
-	int		scale = 10;
-	int		y = 0;
-	t_img_data img = {img_data, line_length, bits_per_pixel, data->rw};
+	int			y;
+	int			x;
+	int			scale;
+	t_img_data	img;
 
+	img = {img_data, line_length, bits_per_pixel, data->rw};
+	scale = 10;
+	y = 0;
 	while (data->map[y])
 	{
-		int x = 0;
+		x = 0;
 		while (data->map[y][x])
 		{
-			draw_minimap_tile(data, img_data, x, y, scale, line_length, bits_per_pixel);
+			draw_minimap_tile(data, img_data, x, y, scale,
+				line_length, bits_per_pixel);
 			x++;
 		}
 		y++;
@@ -95,7 +105,8 @@ void	draw_minimap(t_data *data, char *img_data, int line_length, int bits_per_pi
 	draw_player_on_minimap(data, &img, scale);
 }
 
-void	init_line_vars(t_drawline *line, int *dx, int *dy, int *sx, int *sy)
+void	init_line_vars(t_drawline *line, int *dx,
+	int *dy, int *sx, int *sy)
 {
 	if (*dx < 0)
 		*dx = -(*dx);
@@ -107,12 +118,13 @@ void	init_line_vars(t_drawline *line, int *dx, int *dy, int *sx, int *sy)
 	line->err = *dx + *dy;
 }
 
-void	draw_line_loop(t_img_data *img, int x0, int y0, int x1, int y1, int color, t_drawline *line)
+void	draw_line_loop(t_img_data *img, int x0, int y0,
+	int x1, int y1, int color, t_drawline *line)
 {
-	int dx = x1 - x0;
-	int dy = y1 - y0;
-	int sx = (dx > 0) ? 1 : -1;
-	int sy = (dy > 0) ? 1 : -1;
+	int	dx = x1 - x0;
+	int	dy = y1 - y0;
+	int	sx = (dx > 0) ? 1 : -1;
+	int	sy = (dy > 0) ? 1 : -1;
 
 	while (1)
 	{
@@ -135,13 +147,16 @@ void	draw_line_loop(t_img_data *img, int x0, int y0, int x1, int y1, int color, 
 
 void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int line_length, int bits_per_pixel)
 {
-	int			dx = x1 - x0;
-	int			dy = y1 - y0;
-	int			sx, sy;
+	int			dx;
+	int			dy;
+	int			sx;
+	int			sy;
 	t_drawline	line;
+	t_img_data	img = {img_data, line_length, bits_per_pixel, NULL};
 
+	dx = x1 - x0;
+	dy = y1 - y0;
 	init_line_vars(&line, &dx, &dy, &sx, &sy);
-	t_img_data img = {img_data, line_length, bits_per_pixel, NULL};
 	draw_line_loop(&img, x0, y0, x1, y1, color, &line);
 }
 

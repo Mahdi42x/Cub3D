@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:12:56 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/11 16:15:40 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/17 16:43:36 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/cub3D.h"
+hihi.f        72922hi #include "../../include/cub3D.h"
 
 int	handle_focus(int event, void *param)
 {
@@ -38,7 +38,7 @@ int	handle_mouse(int x, __attribute__((unused)) int y, t_data *data)
 	double		old_dir_x;
 	double		old_plane_x;
 
-	if (x == WINDOW_WIDTH / 2) 
+	if (x == WINDOW_WIDTH / 2)
 		return (0);
 	mlx_mouse_move(data->mlx, data->win, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
 	delta_x = x - WINDOW_WIDTH / 2;

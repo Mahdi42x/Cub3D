@@ -6,7 +6,7 @@
 /*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/16 18:41:29 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/17 16:18:30 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,8 @@ void	load_texture(t_data *data, t_texture *texture, char *line);
 /*		 						 Init				 						*/
 void	set_player_orientation(char direction, t_player *player);
 void	init_data(t_data *data);
+void	init_raycasting(t_data *data, int x, t_ray *ray);
+void	init_dda_steps(t_data *data, t_ray *ray);
 
 /*		 						 Input				 						*/
 int		handle_focus(int event, void *param);
@@ -211,6 +213,10 @@ void	raycasting(t_data *data, t_img_data *img);
 int		render(void *param);
 void	render_weapon(t_data *data, char *img_data,
 			int line_length, int bits_per_pixel);
+void	calculate_wall_distance(t_data *data, t_ray *ray);
+void	select_texture(t_ray *ray);
+void	compute_texture_coordinates(t_data *data, t_ray *ray);
+void	calculate_texture(t_data *data, t_ray *ray);
 /*		 						 Draw				 						*/
 void	put_pixel_to_image(char *img_data, int x, int y, int color,
 			int line_length, int bits_per_pixel);
@@ -220,6 +226,11 @@ void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color,
 			int line_length, int bits_per_pixel);
 void	draw_crosshair(char *img_data, int line_length, int bits_per_pixel, int window_width, int window_height);
 void	print_texture_paths(t_data *data);
+void	draw_ceiling(t_img_data *img, int x, t_data *data, int draw_start);
+void	draw_wall(t_img_data *img, int x, t_data *data, t_ray *ray);
+void	draw_floor(t_img_data *img, int x, t_data *data, int draw_end);
+void	draw_pixels(t_data *data, t_img_data *img, int x, t_ray *ray);
+
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
 /*free*/
 // void	free_textures(t_data *data);
