@@ -1,195 +1,131 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   draw.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/02 17:48:41 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/17 16:44:18 by emkalkan         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/cub3D.h"
 
-void	put_pixel_to_image(char *img_data, int x, int y, int color,
-			int line_length, int bits_per_pixel)
+void	put_pixel_to_image(char *img_data, int x, int y, int color, int line_length, int bits_per_pixel)
 {
-	char	*dst;
-
-	if (x < 0 || y < 0 || x >= WINDOW_WIDTH || y >= WINDOW_HEIGHT)
+	if (x < 0 || y < 0 || x >= line_length / (bits_per_pixel / 8))
 		return ;
-	dst = img_data + (y * line_length + x * (bits_per_pixel / 8));
-	*(unsigned int *)dst = color;
-}
-
-void	put_pixel(t_img_data *img, int x, int y, int color)
-{
-	char	*pixel;
-
-	if (x < 0 || y < 0 || x >= WINDOW_WIDTH || y >= WINDOW_HEIGHT)
-		return ;
-	pixel = img->img_data + (y * img->line_length + x
-			* (img->bits_per_pixel / 8));
+	char *pixel = img_data + (y * line_length + x * (bits_per_pixel / 8));
 	*(unsigned int *)pixel = color;
 }
 
-void	draw_minimap_tile(t_data *data, char *img_data, int x, int y, int scale, int line_length, int bits_per_pixel)
+static void put_pixel(t_img_params *i, int x, int y, int color)
 {
-	int		i;
-	int		j;
-	int		color;
-
-	color = (data->map[y][x] == '1') ? 0xFFFFFF : 0x000000;
-	i = 0;
-	while (i < scale)
-	{
-		j = 0;
-		while (j < scale)
-		{
-			put_pixel_to_image(img_data, x * scale + i, y
-				* scale + j, color, line_length, bits_per_pixel);
-			j++;
-		}
-		i++;
-	}
+    if (x < 0 || y < 0 || x >= i->len / (i->bpp / 8))
+        return ;
+    *(unsigned int *)(i->img + (y * i->len + x * (i->bpp / 8))) = color;
 }
 
-void	draw_player_on_minimap(t_data *data, t_img_data *img, int scale)
+static int get_color(t_data *d, int x, int y)
 {
-	int		dx;
-	int		dy;
-	int		radius;
-	int		player_x;
-	int		player_y;
-
-	player_x = (int)(data->player.x * scale);
-	player_y = (int)(data->player.y * scale);
-	radius = 5;
-	dy = -radius;
-	while (dy <= radius)
-	{
-		dx = -radius;
-		while (dx <= radius)
-		{
-			if (dx * dx + dy * dy <= radius * radius)
-				put_pixel(img, player_x + dx, player_y + dy, 0xFF0000);
-			dx++;
-		}
-		dy++;
-	}
+    if (d->map[y][x] == '1')
+        return (0xFFFFFF);
+    return (0x000000);
 }
 
-void	draw_minimap(t_data *data, char *img_data,
-	int line_length, int bits_per_pixel)
+static void draw_tile(t_data *d, t_img_params *i, int x, int y)
 {
-	int			y;
-	int			x;
-	int			scale;
-	t_img_data	img;
-
-	img = {img_data, line_length, bits_per_pixel, data->rw};
-	scale = 10;
-	y = 0;
-	while (data->map[y])
-	{
-		x = 0;
-		while (data->map[y][x])
-		{
-			draw_minimap_tile(data, img_data, x, y, scale,
-				line_length, bits_per_pixel);
-			x++;
-		}
-		y++;
-	}
-	draw_player_on_minimap(data, &img, scale);
+    int c = get_color(d, x, y);
+    int a = 0;
+    while (a < 10)
+    {
+        int b = 0;
+        while (b < 10)
+        {
+            put_pixel(i, x * 10 + a, y * 10 + b, c);
+            b++;
+        }
+        a++;
+    }
 }
 
-void	init_line_vars(t_drawline *line, int *dx,
-	int *dy, int *sx, int *sy)
+static void draw_map(t_data *d, t_img_params *i, int x, int y)
 {
-	if (*dx < 0)
-		*dx = -(*dx);
-	if (*dy < 0)
-		*dy = -(*dy);
-	*dy = -(*dy);
-	*sx = (*dx > 0) ? 1 : -1;
-	*sy = (*dy > 0) ? 1 : -1;
-	line->err = *dx + *dy;
+    if (d->map[y] && d->map[y][x])
+    {
+        draw_tile(d, i, x, y);
+        if (d->map[y][x + 1])
+            draw_map(d, i, x + 1, y);
+        else
+            draw_map(d, i, 0, y + 1);
+    }
 }
 
-void	draw_line_loop(t_img_data *img, int x0, int y0,
-	int x1, int y1, int color, t_drawline *line)
+static void draw_player(t_img_params *i, int x, int y, int r)
 {
-	int	dx = x1 - x0;
-	int	dy = y1 - y0;
-	int	sx = (dx > 0) ? 1 : -1;
-	int	sy = (dy > 0) ? 1 : -1;
-
-	while (1)
-	{
-		put_pixel(img, x0, y0, color);
-		if (x0 == x1 && y0 == y1)
-			break ;
-		line->e2 = 2 * line->err;
-		if (line->e2 >= dy * -1)
-		{
-			line->err += dy;
-			x0 += sx;
-		}
-		if (line->e2 <= dx)
-		{
-			line->err += dx;
-			y0 += sy;
-		}
-	}
+    int a = -r;
+    while (a <= r)
+    {
+        int b = -r;
+        while (b <= r)
+        {
+            if (a * a + b * b <= r * r)
+                put_pixel(i, x + a, y + b, 0xFF0000);
+            b++;
+        }
+        a++;
+    }
 }
 
-void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color, int line_length, int bits_per_pixel)
+static void draw_direction(t_img_params *i, int x, int y, t_player *p)
 {
-	int			dx;
-	int			dy;
-	int			sx;
-	int			sy;
-	t_drawline	line;
-	t_img_data	img = {img_data, line_length, bits_per_pixel, NULL};
-
-	dx = x1 - x0;
-	dy = y1 - y0;
-	init_line_vars(&line, &dx, &dy, &sx, &sy);
-	draw_line_loop(&img, x0, y0, x1, y1, color, &line);
+    int tip_x = x + (int)(10.0 * p->dir_x);
+    int tip_y = y + (int)(10.0 * p->dir_y);
+    int a = 0;
+    while (a < 10)
+    {
+        put_pixel(i, x + a * (tip_x - x) / 10, y + a * (tip_y - y) / 10, 0xFFFFFF);
+        a++;
+    }
 }
 
-void	draw_crosshair(char *img_data, int line_length, int bits_per_pixel, int window_width, int window_height)
+void draw_minimap(t_data *d, char *img, int len, int bpp)
 {
-	int	center_x = window_width / 2;
-	int	center_y = window_height / 2;
-	int	crosshair_size = 10;
-	int	color = 0xFF69B4;
-	int	y;
-	int x;
-
-	t_img_data img = {img_data, line_length, bits_per_pixel, NULL};
-	y = center_y - crosshair_size;
-	while (y <= center_y + crosshair_size)
-	{
-		if (y >= 0 && y < window_height)
-			put_pixel(&img, center_x, y, color);
-		y++;
-	}
-	x = center_x - crosshair_size;
-	while (x <= center_x + crosshair_size)
-	{
-		if (x >= 0 && x < window_width)
-			put_pixel(&img, x, center_y, color);
-		x++;
-	}
+    t_img_params i = {img, len, bpp};
+    draw_map(d, &i, 0, 0);
+    draw_player(&i, (int)(d->player.x * 10), (int)(d->player.y * 10), 5);
+    draw_direction(&i, (int)(d->player.x * 10), (int)(d->player.y * 10), &d->player);
 }
 
-void	print_texture_paths(t_data *data)
+static void draw_line_helper(t_img_params *i, t_line_params *p, int dx, int dy)
 {
-	printf("Texture NO path: %s\\n", data->no_path);
-	printf("Texture SO path: %s\\n", data->so_path);
-	printf("Texture WE path: %s\\n", data->we_path);
-	printf("Texture EA path: %s\\n", data->ea_path);
+    int sx = (p->x0 < p->x1) ? 1 : -1;
+    int sy = (p->y0 < p->y1) ? 1 : -1;
+    int err = dx - dy;
+    while (1)
+    {
+        put_pixel(i, p->x0, p->y0, p->color);
+        if (p->x0 == p->x1 && p->y0 == p->y1)
+            break ;
+        int e2 = 2 * err;
+        if (e2 > -dy) { err -= dy; p->x0 += sx; }
+        if (e2 < dx) { err += dx; p->y0 += sy; }
+    }
+}
+
+void draw_line(t_img_params *i, t_line_params *p)
+{
+    int dx = (p->x1 >= p->x0) ? (p->x1 - p->x0) : (p->x0 - p->x1);
+    int dy = (p->y1 >= p->y0) ? (p->y1 - p->y0) : (p->y0 - p->y1);
+    draw_line_helper(i, p, dx, dy);
+}
+
+void draw_crosshair(t_img_params *i, t_cross_params *c)
+{
+    int a = -10;
+    while (a <= 10)
+    {
+        if (c->h / 2 + a >= 0 && c->h / 2 + a < c->h)
+            put_pixel(i, c->w / 2, c->h / 2 + a, 0xFF69B4);
+        if (c->w / 2 + a >= 0 && c->w / 2 + a < c->w)
+            put_pixel(i, c->w / 2 + a, c->h / 2, 0xFF69B4);
+        a++;
+    }
+}
+
+void print_texture_paths(t_data *d)
+{
+    printf("Texture NO path: %s\\n", d->no_path);
+    printf("Texture SO path: %s\\n", d->so_path);
+    printf("Texture WE path: %s\\n", d->we_path);
+    printf("Texture EA path: %s\\n", d->ea_path);
 }

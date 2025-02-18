@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 13:50:58 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/03 15:10:21 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/18 16:51:05 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	free_textures(t_data *data)
 	int	i;
 
 	i = 0;
-	while (i < 4) // Es gibt genau 4 Texturen: NO, SO, WE, EA
+	while (i < 4)
 	{
 		if (data->textures[i].img)
 		{
@@ -27,7 +27,6 @@ void	free_textures(t_data *data)
 		}
 		i++;
 	}
-	// Falls die Pfade gespeichert wurden, diese ebenfalls freigeben
 	if (data->no_path)
 		free(data->no_path);
 	if (data->so_path)
@@ -91,10 +90,5 @@ void	free_all_exit(t_data *data)
 		mlx_destroy_image(data->mlx, data->img);
 	if (data->win)
 		mlx_destroy_window(data->mlx, data->win);
-	// if (data->mlx)
-	// {
-	// 	mlx_destroy_display(data->mlx);
-	// 	free(data->mlx);
-	// }
 	free(data);
 }

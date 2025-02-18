@@ -6,7 +6,7 @@
 /*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/17 16:18:30 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/18 17:46:16 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,28 +64,27 @@ typedef struct s_texture {
 }	t_texture;
 
 typedef struct s_ray {
-    double camera_x;
-    double ray_dir_x;
-    double ray_dir_y;
-    int map_x;
-    int map_y;
-    double side_dist_x;
-    double side_dist_y;
-    double delta_dist_x;
-    double delta_dist_y;
-    double perp_wall_dist;
-    int step_x;
-    int step_y;
-    int hit;
-    int side;
-    int line_height;
-    int draw_start;
-    int draw_end;
-    int tex_num;
-    double wall_x;
-    int tex_x;
-} t_ray;
-
+	double		camera_x;
+	double		ray_dir_x;
+	double		ray_dir_y;
+	int			map_x;
+	int			map_y;
+	double		side_dist_x;
+	double		side_dist_y;
+	double		delta_dist_x;
+	double		delta_dist_y;
+	double		perp_wall_dist;
+	int			step_x;
+	int			step_y;
+	int			hit;
+	int			side;
+	int			line_height;
+	int			draw_start;
+	int			draw_end;
+	int			tex_num;
+	double		wall_x;
+	int			tex_x;
+}	t_ray;
 
 typedef struct s_parsemap {
 	size_t		len;
@@ -106,7 +105,18 @@ typedef struct s_renderweapon {
 	int			color;
 	int			y;
 	int			x;
+	int			width;
+	int			height;
+	int			start_x;
 }	t_renderweapon;
+
+typedef struct s_weapon_draw
+{
+	int	start_x;
+	int	start_y;
+	int	width;
+	int	height;
+}	t_weapon_draw;
 
 typedef struct s_flood
 {
@@ -129,34 +139,58 @@ typedef struct s_drawminimap {
 }	t_drawminimap;
 
 typedef struct s_img_data {
-    char				*img_data;
-    int 				line_length;
-    int 				bits_per_pixel;
+	char				*img_data;
+	int					line_length;
+	int					bits_per_pixel;
 	t_renderweapon		*rw;
 }	t_img_data;
 
+typedef struct s_img_params {
+    char    *img;
+    int     len;
+    int     bpp;
+}   t_img_params;
+
+typedef struct s_line_params {
+    int x0;
+    int y0;
+    int x1;
+    int y1;
+    int color;
+}   t_line_params;
+
+typedef struct s_cross_params {
+    int w;
+    int h;
+}   t_cross_params;
+
 // 3: NO, 2: SO, 1: WE, 0: EA
 typedef struct s_data {
-	t_texture	weapon_texture;
-	t_player	player;
-	t_texture	textures[4];
-	void		*mlx;
-	void		*win;
-	char		**map;
-	char		*no_path;
-	char		*so_path;
-	char		*we_path;
-	char		*ea_path;
-	int			**buffer;
-	int			floor_color;
-	int			ceiling_color;
-	int			map_height;
-	int			map_width;
-	void		*img;
-	int			line_height;
-	t_ray		*ray;
-	t_img_data	*img_data;
+	t_texture			weapon_texture;
+	t_player			player;
+	t_texture			textures[4];
+	void				*mlx;
+	void				*win;
+	char				**map;
+	char				*no_path;
+	char				*so_path;
+	char				*we_path;
+	char				*ea_path;
+	int					**buffer;
+	int					floor_color;
+	int					ceiling_color;
+	int					map_height;
+	int					map_width;
+	void				*img;
+	int					line_height;
+	t_ray				*ray;
+	t_img_data			*img_data;
 	t_renderweapon		*rw;
+
+	int					result;
+	char				**visited;
+	char				**temp;
+	char				*temp_line;
 }	t_data;
 
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
@@ -222,9 +256,8 @@ void	put_pixel_to_image(char *img_data, int x, int y, int color,
 			int line_length, int bits_per_pixel);
 void	draw_minimap(t_data *data, char *img_data,
 			int line_length, int bits_per_pixel);
-void	draw_line(char *img_data, int x0, int y0, int x1, int y1, int color,
-			int line_length, int bits_per_pixel);
-void	draw_crosshair(char *img_data, int line_length, int bits_per_pixel, int window_width, int window_height);
+void	draw_line(t_img_params *i, t_line_params *p);
+void	draw_crosshair(t_img_params *i, t_cross_params *c);
 void	print_texture_paths(t_data *data);
 void	draw_ceiling(t_img_data *img, int x, t_data *data, int draw_start);
 void	draw_wall(t_img_data *img, int x, t_data *data, t_ray *ray);
@@ -242,13 +275,15 @@ void	free_and_exit(void *ptr, const char *error_msg, int exit_code);
 void	exit_game(t_data *data);
 void	exit_error(const char *error_msg, int exit_code);
 void	validate_player_spawn(int player_found);
-void	check_player_spawn(char *row, int rows, t_data *data, int *player_found);
+void	check_player_spawn(char *row, int rows,
+			t_data *data, int *player_found);
 char	**realloc_map(char **map, int rows);
-void	process_map_line(char ***map, char *line, int rows, t_data *data, int *player_found);
+void	process_map_line(char ***map, char *line, int rows,
+			t_data *data, int *player_found);
 void	freeimg(t_data	*data);
 void	cleanup_and_exit(t_data *data);
 void	free_textures(t_data *data);
 void	free_mapx(t_data	*data);
-int	exit_x(t_data *data);
+int		exit_x(t_data *data);
 
 #endif

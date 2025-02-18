@@ -6,11 +6,11 @@
 /*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:12:56 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/17 16:43:36 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/18 15:41:34 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-hihi.f        72922hi #include "../../include/cub3D.h"
+#include "../../include/cub3D.h"
 
 int	handle_focus(int event, void *param)
 {

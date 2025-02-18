@@ -6,7 +6,7 @@
 /*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:41:16 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/17 16:43:36 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/18 15:55:35 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ void	load_texture(t_data *data, t_texture *texture, char	*line)
 	newline = strchr(line, '\n');
 	if (newline)
 		*newline = '\0';
-	// Add this check to ensure line is not empty
 	if (*line == '\0')
 	{
 		fprintf(stderr, "Error: Missing texture path.\n");
