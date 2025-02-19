@@ -146,23 +146,23 @@ typedef struct s_img_data {
 }	t_img_data;
 
 typedef struct s_img_params {
-    char    *img;
-    int     len;
-    int     bpp;
-}   t_img_params;
+	char		*img;
+	int			len;
+	int			bpp;
+}		t_img_params;
 
 typedef struct s_line_params {
-    int x0;
-    int y0;
-    int x1;
-    int y1;
-    int color;
-}   t_line_params;
+	int	x0;
+	int	y0;
+	int	x1;
+	int	y1;
+	int	color;
+}		t_line_params;
 
 typedef struct s_cross_params {
-    int w;
-    int h;
-}   t_cross_params;
+	int		w;
+	int		h;
+}		t_cross_params;
 
 // 3: NO, 2: SO, 1: WE, 0: EA
 typedef struct s_data {
@@ -281,9 +281,26 @@ char	**realloc_map(char **map, int rows);
 void	process_map_line(char ***map, char *line, int rows,
 			t_data *data, int *player_found);
 void	freeimg(t_data	*data);
-void	cleanup_and_exit(t_data *data);
 void	free_textures(t_data *data);
 void	free_mapx(t_data	*data);
 int		exit_x(t_data *data);
 
+void	cleanup(t_data *data);
+void	free_map(char **map, int height);
+void	free_all(t_data *data);
+void	free_all_exit(t_data *data);
+
+void	cleanup_mlx(t_data *data);
+void	free_maps(t_data *data);
+void	free_exit(t_data *data);
+
+//draw_funktions
+void	put_pixel(t_img_params *i, int x, int y, int color);
+void	draw_tile(t_data *d, t_img_params *i, int x, int y);
+void	draw_map(t_data *d, t_img_params *i, int x, int y);
+void	draw_player(t_img_params *i, int x, int y, int r);
+void	draw_direction(t_img_params *i, int x, int y, t_player *p);
+void	draw_line_helper(t_img_params *i, t_line_params *p, int dx, int dy);
+
 #endif
+

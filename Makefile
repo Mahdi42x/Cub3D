@@ -10,9 +10,9 @@ LIBS = ./libs/libft/libft.a
 
 # Source files
 MAIN = main
-EXECUTE = casting movement draw
+EXECUTE = casting casting2 movement draw draw2 draw3 draw_utils calc
 PARSING = map_parsing map_parsing2 input flood_fill flood_fill2 file_parsing file_parsing2 load init 
-FREE = free free2
+FREE = free free2 cleanup
 
 SRC = $(addsuffix .c, $(addprefix srcs/main/, $(MAIN))) \
 	$(addsuffix .c, $(addprefix srcs/execute/, $(EXECUTE))) \
