@@ -53,6 +53,7 @@ void	init_data(t_data *data)
 	data->map_height = 100;
 	data->ceiling_color = 0;
 	data->floor_color = 0;
+	data->map = 0;
 }
 
 void	init_raycasting(t_data *data, int x, t_ray *ray)

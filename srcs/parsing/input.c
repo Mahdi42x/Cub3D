@@ -81,6 +81,40 @@ void	free_textures(t_data *data)
 	data->map = NULL;
 }
 
+void	free_maps(t_data *data)
+{
+	int	i;
+
+	if (data->map)
+	{
+		i = 0;
+		while (data->map[i])
+		{
+			free(data->map[i]);
+			data->map[i] = NULL;
+			i++;
+		}
+	}
+}
+
+void	free_exit(t_data *data)
+{
+	int	i;
+
+	if (data->map)
+	{
+		i = 0;
+		while (data->map[i])
+		{
+			free(data->map[i]);
+			data->map[i] = NULL;
+			i++;
+		}
+		free_textures(data);
+	}
+	exit_game(data);
+}
+
 int	handle_keypress(int key, t_data *data)
 {
 	int	i;

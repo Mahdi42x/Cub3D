@@ -72,7 +72,9 @@ void	parse_cub_file_helper(t_data *data)
 	{
 		fprintf(stderr, "Error: Map data is missing or empty in");
 		fprintf(stderr, " the .cub file.\n");
-		exit(EXIT_FAILURE);
+		mlx_destroy_display(data->mlx);
+		free(data->mlx);
+		exit(1);
 	}
 	set_map_width(data);
 }

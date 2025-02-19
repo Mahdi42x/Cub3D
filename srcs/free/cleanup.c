@@ -12,31 +12,6 @@
 
 #include "../../include/cub3D.h"
 
-void	free_textures(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < 4)
-	{
-		if (data->textures[i].img)
-		{
-			mlx_destroy_image(data->mlx, data->textures[i].img);
-			data->textures[i].img = NULL;
-			data->textures[i].addr = NULL;
-		}
-		i++;
-	}
-	if (data->no_path)
-		free(data->no_path);
-	if (data->so_path)
-		free(data->so_path);
-	if (data->we_path)
-		free(data->we_path);
-	if (data->ea_path)
-		free(data->ea_path);
-}
-
 void	cleanup(t_data *data)
 {
 	free_textures(data);
