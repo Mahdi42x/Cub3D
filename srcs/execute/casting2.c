@@ -1,9 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   casting2.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/21 15:36:30 by mawada            #+#    #+#             */
+/*   Updated: 2025/02/21 17:05:41 by mawada           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../include/cub3D.h"
 
 void	render_weapon_loop(t_texture *weapon, t_img_data *img,
 	t_weapon_draw *wd, t_renderweapon *rw)
 {
+	t_data	data;
+
 	while (rw->y < wd->height)
 	{
 		rw->x = 0;
@@ -14,14 +27,40 @@ void	render_weapon_loop(t_texture *weapon, t_img_data *img,
 			rw->color = *(int *)(weapon->addr + (rw->tex_y * weapon->line_length
 						+ rw->tex_x * (weapon->bpp / 8)));
 			if ((rw->color & 0x00FFFFFF) != 0)
+			{
+				data.color_p = rw->color;
+				data.line_length_p = img->line_length;
+				data.bits_per_pixel_p = img->bits_per_pixel;
 				put_pixel_to_image(img->img_data, wd->start_x + rw->x,
-					wd->start_y + rw->y, rw->color, img->line_length,
-					img->bits_per_pixel);
+					wd->start_y + rw->y, &data);
+			}
 			rw->x++;
 		}
 		rw->y++;
 	}
 }
+
+// void	render_weapon_loop(t_texture *weapon, t_img_data *img,
+// 	t_weapon_draw *wd, t_renderweapon *rw)
+// {
+// 	while (rw->y < wd->height)
+// 	{
+// 		rw->x = 0;
+// 		while (rw->x < wd->width)
+// 		{
+// 			rw->tex_x = rw->x * weapon->width / wd->width;
+// 			rw->tex_y = rw->y * weapon->height / wd->height;
+// 			rw->color = *(int *)(weapon->addr + (rw->tex_y * weapon->line_length
+// 						+ rw->tex_x * (weapon->bpp / 8)));
+// 			if ((rw->color & 0x00FFFFFF) != 0)
+// 				put_pixel_to_image(img->img_data, wd->start_x + rw->x,
+// 					wd->start_y + rw->y, rw->color, img->line_length,
+// 					img->bits_per_pixel);
+// 			rw->x++;
+// 		}
+// 		rw->y++;
+// 	}
+// }
 
 void	render_weapon(t_data *data, char *img_data, int line_length,
 	int bits_per_pixel)

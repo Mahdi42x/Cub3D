@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/18 17:46:16 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/21 18:01:23 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,19 @@ typedef struct s_data {
 	char				**visited;
 	char				**temp;
 	char				*temp_line;
+
+	int					bits_per_pixel_r;
+	int					line_length_r;
+	int					endian_r;
+
+	int					*x_ff;
+	int					*y_ff;
+
+	int					line_length_p;
+	int					bits_per_pixel_p;
+	int					color_p;
+
+	int					tex_y;
 }	t_data;
 
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
@@ -209,7 +222,7 @@ char	**parse_map_from_line(char *first_map_line, int fd, t_data *data);
 void	parse_cub_file(t_data *data, const char *file_path);
 void	parse_cub_file_helper(t_data *data);
 int		is_cub_file(char *file_path);
-int		parse_color(char *str, int i);
+int		parse_color(char	*str, int i, t_data *data);
 void	test_texture_loading(void *mlx, char *path, const char *label);
 void	test_all_textures(t_data *data);
 
@@ -252,8 +265,7 @@ void	select_texture(t_ray *ray);
 void	compute_texture_coordinates(t_data *data, t_ray *ray);
 void	calculate_texture(t_data *data, t_ray *ray);
 /*		 						 Draw				 						*/
-void	put_pixel_to_image(char *img_data, int x, int y, int color,
-			int line_length, int bits_per_pixel);
+void	put_pixel_to_image(char *img_data, int x, int y, t_data *data);
 void	draw_minimap(t_data *data, char *img_data,
 			int line_length, int bits_per_pixel);
 void	draw_line(t_img_params *i, t_line_params *p);
@@ -278,10 +290,8 @@ void	validate_player_spawn(int player_found);
 void	check_player_spawn(char *row, int rows,
 			t_data *data, int *player_found);
 char	**realloc_map(char **map, int rows);
-void	process_map_line(char ***map, char *line, int rows,
-			t_data *data, int *player_found);
 void	freeimg(t_data	*data);
-void	free_textures(t_data *data);
+void	free_textures(t_data *data, int weapon);
 void	free_mapx(t_data	*data);
 int		exit_x(t_data *data);
 
@@ -302,5 +312,5 @@ void	draw_player(t_img_params *i, int x, int y, int r);
 void	draw_direction(t_img_params *i, int x, int y, t_player *p);
 void	draw_line_helper(t_img_params *i, t_line_params *p, int dx, int dy);
 
+void free_rest(void);
 #endif
-

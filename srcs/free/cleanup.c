@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 13:50:58 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/18 16:51:05 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/21 18:17:53 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	cleanup(t_data *data)
 {
-	free_textures(data);
+	free_textures(data, 1);
 	if (data->img)
 		mlx_destroy_image(data->mlx, data->img);
 	if (data->win)
@@ -41,7 +41,7 @@ void	free_map(char **map, int height)
 
 void	free_all(t_data *data)
 {
-	free_textures(data);
+	free_textures(data, 1);
 	if (data->map)
 		free_map(data->map, data->map_height);
 	if (data->img)
@@ -58,7 +58,7 @@ void	free_all(t_data *data)
 
 void	free_all_exit(t_data *data)
 {
-	free_textures(data);
+	free_textures(data, 1);
 	if (data->map)
 		free_map(data->map, data->map_height);
 	if (data->img)

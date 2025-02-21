@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   file_parsing2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 14:21:18 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/18 16:51:04 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/21 17:55:03 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	is_cub_file(char *file_path)
 	return (0);
 }
 
-int	parse_color(char	*str, int i)
+int	parse_color(char	*str, int i, t_data *data)
 {
 	int	r;
 	int	g;
@@ -43,7 +43,19 @@ int	parse_color(char	*str, int i)
 	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
 	{
 		fprintf(stderr, "Error: Invalid RGB value in .cub file.\n");
-		exit(EXIT_FAILURE);
+		free(data->map);
+		free(data->no_path);
+		free(data->so_path);
+		free(data->we_path);
+		free(data->ea_path);
+		mlx_destroy_image(data->mlx, data->textures[0].img);
+		mlx_destroy_image(data->mlx, data->textures[1].img);
+		mlx_destroy_image(data->mlx, data->textures[2].img);
+		mlx_destroy_image(data->mlx, data->textures[3].img);
+		free_maps(data);
+		mlx_destroy_display(data->mlx);
+		free(data->mlx);
+		exit(1);
 	}
 	return ((r << 16) | (g << 8) | b);
 }

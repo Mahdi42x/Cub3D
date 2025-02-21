@@ -1,38 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free2.c                                            :+:      :+:    :+:   */
+/*   input2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/13 16:31:10 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/21 15:18:35 by mawada           ###   ########.fr       */
+/*   Created: 2025/02/21 14:42:48 by mawada            #+#    #+#             */
+/*   Updated: 2025/02/21 15:18:47 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3D.h"
 
-void	free_mapx(t_data	*data)
+int	handle_keypress(int key, t_data *data)
 {
 	int	i;
 
-	if (data->map)
+	if (key == KEY_ESC)
 	{
-		i = 0;
-		while (data->map[i])
+		if (data->map)
 		{
-			free(data->map[i]);
-			data->map[i] = NULL;
-			i++;
+			i = 0;
+			while (data->map[i])
+			{
+				free(data->map[i]);
+				data->map[i] = NULL;
+				i++;
+			}
+			free_textures(data, 1);
 		}
-		free_textures(data, 1);
+		exit_game(data);
 	}
-}
-
-int	exit_x(t_data *data)
-{
-	ft_printf("Bye!\n");
-	free_mapx(data);
-	exit_game(data);
+	if (key == KEY_W || key == KEY_A || key == KEY_S || key == KEY_D
+		|| key == KEY_UP || key == KEY_DOWN || key == KEY_LEFT
+		|| key == KEY_RIGHT)
+	{
+		move_player(data, key);
+	}
 	return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   load.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:41:16 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/18 15:55:35 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/21 17:36:31 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,20 @@ void	load_texture(t_data *data, t_texture *texture, char	*line)
 		perror("System Error");
 		fprintf(stderr,
 			"MiniLibX Error: Failed to load texture at path: %s\n", line);
+		if (data->textures[0].img)
+			mlx_destroy_image(data->mlx, data->textures[0].img);
+		if (data->textures[1].img)
+			mlx_destroy_image(data->mlx, data->textures[1].img);
+		if (data->textures[2].img)
+			mlx_destroy_image(data->mlx, data->textures[2].img);
+		if (data->textures[3].img)
+			mlx_destroy_image(data->mlx, data->textures[3].img);
+		free(data->no_path);
+		free(data->so_path);
+		free(data->we_path);
+		free(data->ea_path);
+		mlx_destroy_display(data->mlx);
+		free(data->mlx);
 		exit(EXIT_FAILURE);
 	}
 	texture->addr = mlx_get_data_addr(texture->img,

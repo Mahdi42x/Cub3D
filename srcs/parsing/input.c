@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:12:56 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/18 15:41:34 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/21 15:18:42 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	handle_mouse(int x, __attribute__((unused)) int y, t_data *data)
 	return (0);
 }
 
-void	free_textures(t_data *data)
+void	free_textures(t_data *data, int weapon)
 {
 	free(data->map);
 	if (data->mlx)
@@ -71,7 +71,7 @@ void	free_textures(t_data *data)
 			mlx_destroy_image(data->mlx, data->textures[2].img);
 		if (data->textures[3].img)
 			mlx_destroy_image(data->mlx, data->textures[3].img);
-		if (data->weapon_texture.img)
+		if (data->weapon_texture.img && weapon == 1)
 			mlx_destroy_image(data->mlx, data->weapon_texture.img);
 	}
 	free(data->no_path);
@@ -110,35 +110,7 @@ void	free_exit(t_data *data)
 			data->map[i] = NULL;
 			i++;
 		}
-		free_textures(data);
+		free_textures(data, 1);
 	}
 	exit_game(data);
-}
-
-int	handle_keypress(int key, t_data *data)
-{
-	int	i;
-
-	if (key == KEY_ESC)
-	{
-		if (data->map)
-		{
-			i = 0;
-			while (data->map[i])
-			{
-				free(data->map[i]);
-				data->map[i] = NULL;
-				i++;
-			}
-			free_textures(data);
-		}
-		exit_game(data);
-	}
-	if (key == KEY_W || key == KEY_A || key == KEY_S || key == KEY_D
-		|| key == KEY_UP || key == KEY_DOWN || key == KEY_LEFT
-		|| key == KEY_RIGHT)
-	{
-		move_player(data, key);
-	}
-	return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   casting.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:31:13 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/18 17:47:39 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/21 15:35:17 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,20 +58,17 @@ void	raycasting(t_data *data, t_img_data *img)
 
 int	render(void *param)
 {
-	int			bits_per_pixel;
-	int			line_length;
-	int			endian;
-	t_img_data	img;
-	t_data		*data;
-	t_img_params i;
-	t_cross_params c;
+	t_img_data		img;
+	t_data			*data;
+	t_img_params	i;
+	t_cross_params	c;
 
 	data = (t_data *)param;
 	data->img = mlx_new_image(data->mlx, WINDOW_WIDTH, WINDOW_HEIGHT);
 	img.img_data = mlx_get_data_addr(data->img,
-			&bits_per_pixel, &line_length, &endian);
-	img.line_length = line_length;
-	img.bits_per_pixel = bits_per_pixel;
+			&data->bits_per_pixel_r, &data->line_length_r, &data->endian_r);
+	img.line_length = data->line_length_r;
+	img.bits_per_pixel = data->bits_per_pixel_r;
 	raycasting(data, &img);
 	draw_minimap(data, img.img_data, img.line_length, img.bits_per_pixel);
 	render_weapon(data, img.img_data, img.line_length, img.bits_per_pixel);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   file_parsing.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:35:41 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/18 15:51:06 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/21 18:19:45 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ void	handle_texture(char *line, t_data *data)
 void	handle_color(char *line, t_data *data)
 {
 	if (strncmp(line, "F ", 2) == 0)
-		data->floor_color = parse_color(line + 2, 0);
+		data->floor_color = parse_color(line + 2, 0, data);
 	else if (strncmp(line, "C ", 2) == 0)
-		data->ceiling_color = parse_color(line + 2, 1);
+		data->ceiling_color = parse_color(line + 2, 1, data);
 }
 
 void	parse_maps(t_data *data, char *line, int fd)

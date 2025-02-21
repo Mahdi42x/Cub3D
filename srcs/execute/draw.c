@@ -1,15 +1,39 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/21 15:36:00 by mawada            #+#    #+#             */
+/*   Updated: 2025/02/21 17:05:41 by mawada           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/cub3D.h"
 
-void	put_pixel_to_image(char *img_data, int x,
-	int y, int color, int line_length, int bits_per_pixel)
+void	put_pixel_to_image(char *img_data, int x, int y, t_data *data)
 {
 	char	*pixel;
 
-	if (x < 0 || y < 0 || x >= line_length / (bits_per_pixel / 8))
+	if (x < 0 || y < 0
+		|| x >= data->line_length_p / (data->bits_per_pixel_p / 8))
 		return ;
-	pixel = img_data + (y * line_length + x * (bits_per_pixel / 8));
-	*(unsigned int *)pixel = color;
+	pixel = img_data
+		+ (y * data->line_length_p + x * (data->bits_per_pixel_p / 8));
+	*(unsigned int *)pixel = data->color_p;
 }
+
+// void	put_pixel_to_image(char *img_data, int x,
+// 	int y, int color, int line_length, int bits_per_pixel)
+// {
+// 	char	*pixel;
+
+// 	if (x < 0 || y < 0 || x >= line_length / (bits_per_pixel / 8))
+// 		return ;
+// 	pixel = img_data + (y * line_length + x * (bits_per_pixel / 8));
+// 	*(unsigned int *)pixel = color;
+// }
 
 void	put_pixel(t_img_params *i, int x, int y, int color)
 {

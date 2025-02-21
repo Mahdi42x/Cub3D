@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   calc.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 15:49:31 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/17 16:18:29 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/21 15:02:38 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	compute_texture_coordinates(t_data *data, t_ray *ray)
 	{
 		fprintf(stderr, "Error: Invalid texture %d\\n", ray->tex_num);
 		fprintf(stderr, "Address for texture %d\\n", ray->tex_num);
-		return ;
+		free(ray);
 	}
 	if (ray->side == 0)
 		ray->wall_x = data->player.y + ray->perp_wall_dist * ray->ray_dir_y;

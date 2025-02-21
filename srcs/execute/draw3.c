@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw3.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/21 15:41:36 by mawada            #+#    #+#             */
+/*   Updated: 2025/02/21 15:51:14 by mawada           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../include/cub3D.h"
 
@@ -35,4 +46,12 @@ void	draw_direction(t_img_params *i, int x, int y, t_player *p)
 			y + a * (tip_y - y) / 10, 0xFFFFFF);
 		a++;
 	}
+}
+
+void	print_texture_paths(t_data *d)
+{
+	printf("Texture NO path: %s\\n", d->no_path);
+	printf("Texture SO path: %s\\n", d->so_path);
+	printf("Texture WE path: %s\\n", d->we_path);
+	printf("Texture EA path: %s\\n", d->ea_path);
 }
