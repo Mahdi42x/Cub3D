@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/21 18:01:23 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/24 16:30:06 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,5 +312,4 @@ void	draw_player(t_img_params *i, int x, int y, int r);
 void	draw_direction(t_img_params *i, int x, int y, t_player *p);
 void	draw_line_helper(t_img_params *i, t_line_params *p, int dx, int dy);
 
-void free_rest(void);
 #endif
