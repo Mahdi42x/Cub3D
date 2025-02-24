@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   file_parsing2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 14:21:18 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/21 17:55:03 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/24 16:35:55 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,12 @@ int	is_cub_file(char *file_path)
 
 int	parse_color(char	*str, int i, t_data *data)
 {
-	int	r;
-	int	g;
-	int	b;
+	int			r;
+	int			g;
+	int			b;
+	char		*orig_line;
 
+	orig_line = str - 2;
 	(void) i;
 	while (*str && isspace(*str))
 		str++;
@@ -55,6 +57,9 @@ int	parse_color(char	*str, int i, t_data *data)
 		free_maps(data);
 		mlx_destroy_display(data->mlx);
 		free(data->mlx);
+		printf("FREE: %p", (void *)(orig_line));
+		free(orig_line);
+		get_next_line(-1);
 		exit(1);
 	}
 	return ((r << 16) | (g << 8) | b);
@@ -71,7 +76,7 @@ void	test_texture_loading(void	*mlx, char	*path, const char	*label)
 	{
 		perror("System Error");
 		fprintf(stderr,
-			"MiniLibX Error: Cannot load texture for %s at path: %s\n",
+			"MiniLibX Error: Cannot load texture for %s at tesst path: %s\n",
 			label, path);
 		exit(EXIT_FAILURE);
 	}

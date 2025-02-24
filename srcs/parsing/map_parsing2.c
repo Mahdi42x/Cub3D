@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map_parsing2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 15:10:54 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/21 18:22:55 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/24 16:42:01 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ char	**allocate_and_store_line(char **map, char *line, int rows)
 	{
 		perror("Error reallocating map");
 		free_map(map, rows);
+		printf("FREE:   %p", (void *)(line));
+		free(line); 
 		exit(EXIT_FAILURE);
 	}
 	map = temp;
@@ -30,13 +32,15 @@ char	**allocate_and_store_line(char **map, char *line, int rows)
 		perror("Error duplicating line");
 		free(map);
 		free_map(map, rows);
+		printf("FREE:   %p", (void *)(line));
+		free(line); 
 		exit(EXIT_FAILURE);
 	}
 	return (map);
 }
 
 void	handle_player_spawn(char **map, int rows,
-	int *player_found, t_data *data)
+	int *player_found, t_data *data, char *line) 
 {
 	int		x;
 	char	c;
@@ -51,6 +55,8 @@ void	handle_player_spawn(char **map, int rows,
 			{
 				fprintf(stderr, "Error: Too many spawns.\n");
 				free_map(map, rows + 1);
+				printf("FREE:   %p", (void *)(line));
+				free(line); 
 				exit(EXIT_FAILURE);
 			}
 			data->player.x = x + 0.5;
@@ -80,7 +86,7 @@ char	**read_map_lines(char *first_map_line, int fd,
 		if (len > 0 && line[len - 1] == '\n')
 			line[len - 1] = '\0';
 		map = allocate_and_store_line(map, line, rows);
-		handle_player_spawn(map, rows, player_found, data);
+		handle_player_spawn(map, rows, player_found, data, line); 
 		rows++;
 		map[rows] = NULL;
 		data->temp_line = get_next_line(fd);
@@ -91,38 +97,38 @@ char	**read_map_lines(char *first_map_line, int fd,
 	return (map);
 }
 
-char **parse_map_from_line(char *first_map_line, int fd, t_data *data)
+char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 {
-    int player_found = 0;
-    char **map = read_map_lines(first_map_line, fd, data, &player_found);
-    
-    if (!player_found)
-    {
-        fprintf(stderr, "Error: No player spawn (N, E, S, W) found in the map.\n");
-        
-        // Freigabe des allokierten Speichers
-        if (map)
-        {
-            free(map[0]);  // Freigabe der ersten Zeile
-            free(map[1]);  // Freigabe der zweiten Zeile
-            free(map[2]);  // Freigabe der dritten Zeile
-            free(map);     // Freigabe des Zeiger-Arrays
-        }
-        // Freigabe anderer Ressourcen
-        mlx_destroy_image(data->mlx, data->textures[0].img);
-        mlx_destroy_image(data->mlx, data->textures[1].img);
-        mlx_destroy_image(data->mlx, data->textures[2].img);
-        mlx_destroy_image(data->mlx, data->textures[3].img);
-        free(data->no_path);
-        free(data->so_path);
-        free(data->we_path);
-        free(data->ea_path);
-        mlx_destroy_display(data->mlx);
-        free(data->map);
-        free(data->mlx);
-        exit(EXIT_FAILURE);
-    }
-    return map;
+	int		player_found;
+	char	**map;
+
+	player_found = 0;
+	map = read_map_lines(first_map_line, fd, data, &player_found);
+	if (!player_found)
+	{
+		fprintf(stderr, "Error: No player spawn (N, E, S, W) found in the map.\n");
+		if (map)
+		{
+			free(map[0]);
+			free(map[1]);
+			free(map[2]);
+			free(map);
+		}
+		mlx_destroy_image(data->mlx, data->textures[0].img);
+		mlx_destroy_image(data->mlx, data->textures[1].img);
+		mlx_destroy_image(data->mlx, data->textures[2].img);
+		mlx_destroy_image(data->mlx, data->textures[3].img);
+		free(data->no_path);
+		free(data->so_path);
+		free(data->we_path);
+		free(data->ea_path);
+		mlx_destroy_display(data->mlx);
+		free(data->map);
+		free(data->mlx);
+		free(first_map_line);
+		exit(EXIT_FAILURE);
+	}
+	return (map);
 }
 
 // char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)

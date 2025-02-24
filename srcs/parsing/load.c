@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   load.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:41:16 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/21 17:36:31 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/24 16:33:37 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,9 @@ void	load_texture(t_data *data, t_texture *texture, char	*line)
 	if (*line == '\0')
 	{
 		fprintf(stderr, "Error: Missing texture path.\n");
+		printf("FREE:   %p", (void *)(line - 3));
+		free(line - 3); 
+		get_next_line(-1);
 		exit(EXIT_FAILURE);
 	}
 	texture->img = mlx_xpm_file_to_image(data->mlx,
@@ -66,6 +69,9 @@ void	load_texture(t_data *data, t_texture *texture, char	*line)
 		free(data->ea_path);
 		mlx_destroy_display(data->mlx);
 		free(data->mlx);
+		printf("FREE:   %p", (void *)(line - 3));
+		free(line - 3); 
+		get_next_line(-1);
 		exit(EXIT_FAILURE);
 	}
 	texture->addr = mlx_get_data_addr(texture->img,
