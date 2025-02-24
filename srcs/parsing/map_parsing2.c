@@ -6,11 +6,12 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 15:10:54 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/24 16:42:01 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/24 19:35:32 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3D.h"
+
 
 char	**allocate_and_store_line(char **map, char *line, int rows)
 {
@@ -55,8 +56,19 @@ void	handle_player_spawn(char **map, int rows,
 			{
 				fprintf(stderr, "Error: Too many spawns.\n");
 				free_map(map, rows + 1);
-				printf("FREE:   %p", (void *)(line));
+				mlx_destroy_image(data->mlx, data->textures[0].img);
+				mlx_destroy_image(data->mlx, data->textures[1].img);
+				mlx_destroy_image(data->mlx, data->textures[2].img);
+				mlx_destroy_image(data->mlx, data->textures[3].img);
+				free(data->no_path);
+				free(data->so_path);
+				free(data->we_path);
+				free(data->ea_path);
+				mlx_destroy_display(data->mlx);
+				free(data->map);
+				free(data->mlx);
 				free(line); 
+				get_next_line(-1);
 				exit(EXIT_FAILURE);
 			}
 			data->player.x = x + 0.5;
@@ -126,6 +138,7 @@ char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 		free(data->map);
 		free(data->mlx);
 		free(first_map_line);
+		get_next_line(-1);
 		exit(EXIT_FAILURE);
 	}
 	return (map);

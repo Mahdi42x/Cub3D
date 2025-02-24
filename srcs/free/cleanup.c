@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 13:50:58 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/21 18:17:53 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/24 18:48:18 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	free_all(t_data *data)
 		free(data->mlx);
 	}
 	free(data);
+	get_next_line(-1);
 }
 
 void	free_all_exit(t_data *data)

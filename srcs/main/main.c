@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 15:56:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/21 18:02:14 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/24 19:15:34 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	load_map_and_textures(t_data *data, char *filename)
 		free(data->map);
 		mlx_destroy_display(data->mlx);
 		free(data->mlx);
+		get_next_line(-1);
 		exit(1);
 	}
 	print_texture_paths(data);

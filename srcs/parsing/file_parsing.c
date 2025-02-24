@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:35:41 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/24 14:39:32 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/24 18:20:24 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,10 +70,11 @@ void	parse_cub_file_helper(t_data *data)
 {
 	if (!data->map || !data->map[0])
 	{
-		fprintf(stderr, "Error: Map data is missing or empty in");
-		fprintf(stderr, " the .cub file.\n");
+		printf("Error: Map data is missing or empty in");
+		printf(" the .cub file.\n");
 		mlx_destroy_display(data->mlx);
 		free(data->mlx);
+		get_next_line(-1);
 		exit(1);
 	}
 	set_map_width(data);
