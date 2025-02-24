@@ -6,7 +6,7 @@
 #    By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/10 15:22:24 by mawada            #+#    #+#              #
-#    Updated: 2024/04/22 14:10:59 by mawada           ###   ########.fr        #
+#    Updated: 2025/02/24 14:24:03 by mawada           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = libft.a
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -I includes/
+CFLAGS = -g -Wall -Wextra -Werror -I includes/
 
 HEADER = $(addsuffix .h, $(addprefix includes/, libutils get_next_line ft_printf))
 
