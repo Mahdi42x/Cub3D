@@ -278,12 +278,8 @@ void	draw_pixels(t_data *data, t_img_data *img, int x, t_ray *ray);
 
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
 /*free*/
-// void	free_textures(t_data *data);
-// void	cleanup(t_data *data);
 // void	free_map(char **map, int height);
-// void	free_all(t_data *data);
-// void	free_all_exit(t_data *data);
-void	free_and_exit(void *ptr, const char *error_msg, int exit_code);
+
 void	exit_game(t_data *data);
 void	exit_error(const char *error_msg, int exit_code);
 void	validate_player_spawn(int player_found);
@@ -292,17 +288,11 @@ void	check_player_spawn(char *row, int rows,
 char	**realloc_map(char **map, int rows);
 void	freeimg(t_data	*data);
 void	free_textures(t_data *data, int weapon);
-void	free_mapx(t_data	*data);
 int		exit_x(t_data *data);
 
-void	cleanup(t_data *data);
 void	free_map(char **map, int height);
-void	free_all(t_data *data);
-void	free_all_exit(t_data *data);
 
-void	cleanup_mlx(t_data *data);
 void	free_maps(t_data *data);
-void	free_exit(t_data *data);
 
 //draw_funktions
 void	put_pixel(t_img_params *i, int x, int y, int color);
