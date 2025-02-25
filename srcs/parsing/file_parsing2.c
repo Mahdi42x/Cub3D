@@ -46,18 +46,10 @@ int	parse_color(char	*str, int i, t_data *data)
 	{
 		fprintf(stderr, "Error: Invalid RGB value in .cub file.\n");
 		free(data->map);
-		free(data->no_path);
-		free(data->so_path);
-		free(data->we_path);
-		free(data->ea_path);
-		mlx_destroy_image(data->mlx, data->textures[0].img);
-		mlx_destroy_image(data->mlx, data->textures[1].img);
-		mlx_destroy_image(data->mlx, data->textures[2].img);
-		mlx_destroy_image(data->mlx, data->textures[3].img);
+		free_textures(data, 0);
 		free_maps(data);
 		mlx_destroy_display(data->mlx);
 		free(data->mlx);
-		printf("FREE: %p", (void *)(orig_line));
 		free(orig_line);
 		get_next_line(-1);
 		exit(1);

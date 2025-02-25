@@ -49,19 +49,6 @@ int	flood_fill(char **map, int x, int y, t_flood *flood)
 		|| flood_fill(map, x, y - 1, flood));
 }
 
-void	free_visited(char **visited, int rows)
-{
-	int	i;
-
-	i = 0;
-	while (i < rows)
-	{
-		free(visited[i]);
-		i++;
-	}
-	free(visited);
-}
-
 char	**allocate_visited(int rows, int cols)
 {
 	char	**visited;
@@ -69,7 +56,11 @@ char	**allocate_visited(int rows, int cols)
 
 	visited = malloc(rows * sizeof(char *));
 	if (!visited)
-		free_and_exit(visited, "allocating memory for visited map.", 1);
+	{
+		printf("The map is missing or empty.");
+		free(visited);
+		exit (0);
+	}
 	i = 0;
 	while (i < rows)
 	{
@@ -86,11 +77,17 @@ int	check_map_validity(char **map, int *rows, int *cols)
 	*rows = 0;
 	*cols = 0;
 	if (!map || !map[0])
-		free_and_exit(NULL, "The map is missing or empty.", 0);
+	{
+		printf("The map is missing or empty.");
+		exit (0);
+	}
 	while (map[*rows])
 		(*rows)++;
 	if (*rows == 0)
-		free_and_exit(NULL, "The map contains no valid data.", 0);
+	{
+		printf("The map contains no valid data.");
+		exit (0);
+	}
 	*cols = strlen(map[0]);
 	return (1);
 }

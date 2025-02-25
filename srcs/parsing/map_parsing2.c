@@ -22,8 +22,8 @@ char	**allocate_and_store_line(char **map, char *line, int rows)
 	{
 		perror("Error reallocating map");
 		free_map(map, rows);
-		printf("FREE:   %p", (void *)(line));
-		free(line); 
+		free(line);
+		get_next_line(-1);
 		exit(EXIT_FAILURE);
 	}
 	map = temp;
@@ -33,8 +33,8 @@ char	**allocate_and_store_line(char **map, char *line, int rows)
 		perror("Error duplicating line");
 		free(map);
 		free_map(map, rows);
-		printf("FREE:   %p", (void *)(line));
 		free(line); 
+		get_next_line(-1);
 		exit(EXIT_FAILURE);
 	}
 	return (map);
@@ -56,20 +56,14 @@ void	handle_player_spawn(char **map, int rows,
 			{
 				fprintf(stderr, "Error: Too many spawns.\n");
 				free_map(map, rows + 1);
-				mlx_destroy_image(data->mlx, data->textures[0].img);
-				mlx_destroy_image(data->mlx, data->textures[1].img);
-				mlx_destroy_image(data->mlx, data->textures[2].img);
-				mlx_destroy_image(data->mlx, data->textures[3].img);
-				free(data->no_path);
-				free(data->so_path);
-				free(data->we_path);
-				free(data->ea_path);
+				free_textures(data, 0);
 				mlx_destroy_display(data->mlx);
 				free(data->map);
 				free(data->mlx);
-				free(line); 
+				free(line);
 				get_next_line(-1);
-				exit(EXIT_FAILURE);
+				break;
+				//exit(EXIT_FAILURE);
 			}
 			data->player.x = x + 0.5;
 			data->player.y = rows + 0.5;
@@ -98,16 +92,50 @@ char	**read_map_lines(char *first_map_line, int fd,
 		if (len > 0 && line[len - 1] == '\n')
 			line[len - 1] = '\0';
 		map = allocate_and_store_line(map, line, rows);
+		if (!map)
+			get_next_line(-1);
 		handle_player_spawn(map, rows, player_found, data, line); 
 		rows++;
 		map[rows] = NULL;
 		data->temp_line = get_next_line(fd);
 		if (line != first_map_line)
+		{
+			//get_next_line(-1);
 			free(line);
+		}
 		line = data->temp_line;
 	}
 	return (map);
 }
+
+void	validate_map_characters(char **map, t_data *data)
+{
+	int y, x;
+	char c;
+
+	y = 0;
+	while (map[y])
+	{
+		x = 0;
+		while (map[y][x])
+		{
+			c = map[y][x];
+			if (c != 'N' && c != 'E' && c != 'S' && c != 'W' && c != '1' && c != '0' && c != ' ')
+			{
+				fprintf(stderr, "Error: Invalid character '%c' found in map.\n", c);
+				free_maps(data);
+				free_textures(data, 1);
+				free(*map);
+				mlx_destroy_display(data->mlx);
+				free(data->mlx);
+				exit (1);
+			}
+			x++;
+		}
+		y++;
+	}
+}
+
 
 char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 {
@@ -116,6 +144,7 @@ char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 
 	player_found = 0;
 	map = read_map_lines(first_map_line, fd, data, &player_found);
+	validate_map_characters(map, data);
 	if (!player_found)
 	{
 		fprintf(stderr, "Error: No player spawn (N, E, S, W) found in the map.\n");
@@ -123,17 +152,10 @@ char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 		{
 			free(map[0]);
 			free(map[1]);
-			free(map[2]);
+			//free(map[2]);
 			free(map);
 		}
-		mlx_destroy_image(data->mlx, data->textures[0].img);
-		mlx_destroy_image(data->mlx, data->textures[1].img);
-		mlx_destroy_image(data->mlx, data->textures[2].img);
-		mlx_destroy_image(data->mlx, data->textures[3].img);
-		free(data->no_path);
-		free(data->so_path);
-		free(data->we_path);
-		free(data->ea_path);
+		free_textures(data, 0);
 		mlx_destroy_display(data->mlx);
 		free(data->map);
 		free(data->mlx);

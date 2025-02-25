@@ -54,6 +54,7 @@ void	init_data(t_data *data)
 	data->ceiling_color = 0;
 	data->floor_color = 0;
 	data->map = 0;
+	data->weapon_texture.img = NULL;
 }
 
 void	init_raycasting(t_data *data, int x, t_ray *ray)

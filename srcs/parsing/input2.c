@@ -27,6 +27,7 @@ int	handle_keypress(int key, t_data *data)
 				data->map[i] = NULL;
 				i++;
 			}
+			free(data->map);
 			free_textures(data, 1);
 		}
 		exit_game(data);

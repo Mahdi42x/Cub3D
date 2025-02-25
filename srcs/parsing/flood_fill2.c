@@ -44,30 +44,33 @@ int	free_x_y_ff(t_data *data)
 
 int	is_map_enclosed(char **map)
 {
-	t_data	data;
-	int		rows;
-	int		cols;
+    t_data	data;
+    int		rows;
+    int		cols;
 
-	data.x_ff = malloc(sizeof(int));
-	data.y_ff = malloc(sizeof(int));
-	if (!data.x_ff || !data.y_ff)
+    data.x_ff = malloc(sizeof(int));
+    data.y_ff = malloc(sizeof(int));
+    if (!data.x_ff || !data.y_ff)
+        return (0);
+    if (!check_map_validity(map, &rows, &cols))
+        return (0);
+    if (!find_starting_point(map, rows, cols, &data))
+    {
 		free_x_y_ff(&data);
-	if (!check_map_validity(map, &rows, &cols))
-		free_x_y_ff(&data);
-	if (!find_starting_point(map, rows, cols, &data))
-	{
-		free(data.x_ff);
-		free(data.y_ff);
-		return (1);
-	}
-	data.visited = allocate_visited(rows, cols);
-	data.result = flood_fill(map, *data.x_ff, *data.y_ff,
-			&(t_flood){rows, cols, data.visited});
-	free_visited(data.visited, rows);
-	free(data.x_ff);
-	free(data.y_ff);
-	return (!data.result);
+        //free(data.x_ff);
+        //free(data.y_ff);
+        return (1);
+    }
+    data.visited = allocate_visited(rows, cols);
+    data.result = flood_fill(map, *data.x_ff, *data.y_ff,
+            &(t_flood){rows, cols, data.visited});
+    free_visited(data.visited, rows);
+	free_x_y_ff(&data);
+	//free(data.x_ff);
+	//free(data.y_ff);
+    return (!data.result);  // If result is 1, map is open -> return false
 }
+
 
 // int	find_starting_point(char **map, int rows, int cols, 
 // 		int *x, int *y)

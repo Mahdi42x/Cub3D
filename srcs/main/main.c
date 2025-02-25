@@ -23,14 +23,23 @@ void	check_args_and_init(int argc, char *argv[], int *fd, t_data *data)
 	if (*fd == -1)
 	{
 		perror("Error opening file");
-		free_exit(data);
+		free_maps(data);
+		free(data->map);
+		free_textures(data, 1);
+		exit_game(data);
+
+		//free_exit(data);
 		exit(1);
 	}
 	data->mlx = mlx_init();
 	if (!data->mlx)
 	{
 		fprintf(stderr, "Error: Failed to initialize MiniLibX.\n");
-		free_exit(data);
+		free_maps(data);
+		free(data->map);
+		free_textures(data, 1);
+		exit_game(data);
+		//free_exit(data);
 		exit(1);
 	}
 }
@@ -42,14 +51,7 @@ void	load_map_and_textures(t_data *data, char *filename)
 	if (!is_map_enclosed(data->map))
 	{
 		fprintf(stderr, "Error: The map is not fully enclosed by walls.\n");
-		free(data->no_path);
-		free(data->so_path);
-		free(data->we_path);
-		free(data->ea_path);
-		mlx_destroy_image(data->mlx, data->textures[0].img);
-		mlx_destroy_image(data->mlx, data->textures[1].img);
-		mlx_destroy_image(data->mlx, data->textures[2].img);
-		mlx_destroy_image(data->mlx, data->textures[3].img);
+		free_textures(data, 0);
 		free_maps(data);
 		free(data->map);
 		mlx_destroy_display(data->mlx);
@@ -68,7 +70,11 @@ void	setup_window_and_hooks(t_data *data)
 	if (!data->win)
 	{
 		fprintf(stderr, "Error: Failed to create a window.\n");
-		free_exit(data);
+		free_maps(data);
+		free(data->map);
+		free_textures(data, 1);
+		exit_game(data);
+		//free_exit(data);
 		exit(1);
 	}
 	mlx_mouse_move(data->mlx, data->win, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);

@@ -66,7 +66,10 @@ void	parse_cub_file(t_data *data, const char *file_path)
 
 	fd = open(file_path, O_RDONLY);
 	if (fd == -1)
-		exit_error("Error opening file", 1);
+	{
+		printf("Error opening file");
+		exit (1);
+	}
 	line = get_next_line(fd);
 	while (line)
 	{
@@ -78,6 +81,11 @@ void	parse_cub_file(t_data *data, const char *file_path)
 		else if (*line == '1' || *line == '0' || *line == ' ')
 		{
 			parse_maps(data, line, fd);
+			if (!is_map_enclosed(data->map))
+			{
+			    fprintf(stderr, "Error: The map is not enclosed by walls.\n");
+			    break ;
+			}
 			break ;
 		}
 		free(line);

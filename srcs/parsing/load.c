@@ -12,24 +12,24 @@
 
 #include "../../include/cub3D.h"
 
-void	load_weapon_texture(t_data *data, char	*path)
+void	load_weapon_texture(t_data *data, char *path)
 {
 	data->weapon_texture.img = mlx_xpm_file_to_image(data->mlx,
 			path, &data->weapon_texture.width, &data->weapon_texture.height);
 	if (!data->weapon_texture.img)
 	{
 		perror("System Error");
-		fprintf(stderr,
-			"MiniLibX Error: Failed to load weapon texture at path: %s\n", path);
+		fprintf(stderr, "MiniLibX Error: Failed to load weapon texture at path: %s\n", path);
 		exit(EXIT_FAILURE);
 	}
+
 	data->weapon_texture.addr = mlx_get_data_addr(
 			data->weapon_texture.img,
 			&data->weapon_texture.bpp,
 			&data->weapon_texture.line_length,
-			&data->weapon_texture.endian
-			);
+			&data->weapon_texture.endian);
 }
+
 
 void	load_texture(t_data *data, t_texture *texture, char	*line)
 {
@@ -43,7 +43,6 @@ void	load_texture(t_data *data, t_texture *texture, char	*line)
 	if (*line == '\0')
 	{
 		fprintf(stderr, "Error: Missing texture path.\n");
-		printf("FREE:   %p", (void *)(line - 3));
 		free(line - 3); 
 		get_next_line(-1);
 		exit(EXIT_FAILURE);
@@ -69,7 +68,6 @@ void	load_texture(t_data *data, t_texture *texture, char	*line)
 		free(data->ea_path);
 		mlx_destroy_display(data->mlx);
 		free(data->mlx);
-		printf("FREE:   %p", (void *)(line - 3));
 		free(line - 3); 
 		get_next_line(-1);
 		exit(EXIT_FAILURE);
