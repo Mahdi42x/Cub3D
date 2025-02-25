@@ -13,6 +13,37 @@
 #include "../../include/cub3D.h"
 
 
+void	validate_map_characters(char **map, t_data *data)
+{
+	int y, x;
+	char c;
+
+	y = 0;
+	while (map[y])
+	{
+		x = 0;
+		while (map[y][x])
+		{
+			c = map[y][x];
+			if (c != 'N' && c != 'E' && c != 'S' && c != 'W' && c != '1' && c != '0' && c != ' ')
+			{
+				fprintf(stderr, "Error: Invalid character '%c' found in map.\n", c);
+				free_maps(data);
+				free_textures(data, 1);
+				free(*map);
+				free(map);
+				mlx_destroy_display(data->mlx);
+				free(data->mlx);
+				//get_next_line(-1);
+				//break;
+				exit (1);
+			}
+			x++;
+		}
+		y++;
+	}
+}
+
 char	**allocate_and_store_line(char **map, char *line, int rows)
 {
 	char	**temp;
@@ -31,8 +62,8 @@ char	**allocate_and_store_line(char **map, char *line, int rows)
 	if (!map[rows])
 	{
 		perror("Error duplicating line");
-		free(map);
 		free_map(map, rows);
+		free(map);
 		free(line); 
 		get_next_line(-1);
 		exit(EXIT_FAILURE);
@@ -55,15 +86,15 @@ void	handle_player_spawn(char **map, int rows,
 			if (*player_found)
 			{
 				fprintf(stderr, "Error: Too many spawns.\n");
-				free_map(map, rows + 1);
+				/*free_map(map, rows + 1);
 				free_textures(data, 0);
 				mlx_destroy_display(data->mlx);
 				free(data->map);
-				free(data->mlx);
+				free(data->mlx);*/
 				free(line);
+				*player_found = 2;
 				get_next_line(-1);
 				break;
-				//exit(EXIT_FAILURE);
 			}
 			data->player.x = x + 0.5;
 			data->player.y = rows + 0.5;
@@ -82,7 +113,7 @@ char	**read_map_lines(char *first_map_line, int fd,
 	char	*line;
 	int		rows;
 	int		len;
-
+	
 	map = NULL;
 	line = first_map_line;
 	rows = 0;
@@ -94,11 +125,11 @@ char	**read_map_lines(char *first_map_line, int fd,
 		map = allocate_and_store_line(map, line, rows);
 		if (!map)
 			get_next_line(-1);
-		handle_player_spawn(map, rows, player_found, data, line); 
+		handle_player_spawn(map, rows, player_found, data, line);
 		rows++;
 		map[rows] = NULL;
 		data->temp_line = get_next_line(fd);
-		if (line != first_map_line)
+		if (line != first_map_line && *player_found != 2)
 		{
 			//get_next_line(-1);
 			free(line);
@@ -108,33 +139,6 @@ char	**read_map_lines(char *first_map_line, int fd,
 	return (map);
 }
 
-void	validate_map_characters(char **map, t_data *data)
-{
-	int y, x;
-	char c;
-
-	y = 0;
-	while (map[y])
-	{
-		x = 0;
-		while (map[y][x])
-		{
-			c = map[y][x];
-			if (c != 'N' && c != 'E' && c != 'S' && c != 'W' && c != '1' && c != '0' && c != ' ')
-			{
-				fprintf(stderr, "Error: Invalid character '%c' found in map.\n", c);
-				free_maps(data);
-				free_textures(data, 1);
-				free(*map);
-				mlx_destroy_display(data->mlx);
-				free(data->mlx);
-				exit (1);
-			}
-			x++;
-		}
-		y++;
-	}
-}
 
 
 char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
@@ -145,14 +149,15 @@ char	**parse_map_from_line(char *first_map_line, int fd, t_data *data)
 	player_found = 0;
 	map = read_map_lines(first_map_line, fd, data, &player_found);
 	validate_map_characters(map, data);
-	if (!player_found)
+	printf("\nPLAYERS2 = %d\n", player_found);
+	if (player_found == 2 || player_found == 0)
 	{
 		fprintf(stderr, "Error: No player spawn (N, E, S, W) found in the map.\n");
 		if (map)
 		{
 			free(map[0]);
 			free(map[1]);
-			//free(map[2]);
+			free(map[2]);
 			free(map);
 		}
 		free_textures(data, 0);
