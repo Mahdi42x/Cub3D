@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:42:53 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/17 16:18:30 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/02/26 13:26:24 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	init_data(t_data *data)
 	data->floor_color = 0;
 	data->map = 0;
 	data->weapon_texture.img = NULL;
+	data->many = 0;
 }
 
 void	init_raycasting(t_data *data, int x, t_ray *ray)

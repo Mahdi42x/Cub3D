@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 17:04:22 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/24 14:17:27 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:57:26 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void	exit_game(t_data *data)
 
 void	free_textures(t_data *data, int weapon)
 {
-	//free(data->map);
 	if (data->mlx)
 	{
 		if (data->textures[0].img)
@@ -45,7 +44,6 @@ void	free_textures(t_data *data, int weapon)
 	free(data->so_path);
 	free(data->we_path);
 	free(data->ea_path);
-	//data->map = NULL;
 }
 
 void	free_map(char **map, int height)
@@ -88,13 +86,4 @@ void	free_visited(char **visited, int rows)
 		i++;
 	}
 	free(visited);
-}
-
-int	exit_x(t_data *data)
-{
-	ft_printf("Bye!\n");
-	free_maps(data);
-	free_textures(data, 1);
-	exit_game(data);
-	return (0);
 }

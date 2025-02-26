@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 15:56:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/24 19:15:34 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:45:36 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void	check_args_and_init(int argc, char *argv[], int *fd, t_data *data)
 		free(data->map);
 		free_textures(data, 1);
 		exit_game(data);
-
 		//free_exit(data);
 		exit(1);
 	}
