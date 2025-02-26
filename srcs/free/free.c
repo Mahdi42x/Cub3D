@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 17:04:22 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/26 13:57:26 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/26 18:38:50 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,14 @@ void	free_textures(t_data *data, int weapon)
 		if (data->weapon_texture.img && weapon == 1)
 			mlx_destroy_image(data->mlx, data->weapon_texture.img);
 	}
-	free(data->no_path);
-	free(data->so_path);
-	free(data->we_path);
-	free(data->ea_path);
+	if (data->no_path)
+		free(data->no_path);
+	if (data->so_path)
+		free(data->so_path);
+	if (data->we_path)
+		free(data->we_path);
+	if (data->ea_path)
+		free(data->ea_path);
 }
 
 void	free_map(char **map, int height)

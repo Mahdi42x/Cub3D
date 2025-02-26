@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:18:31 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/24 19:26:25 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/26 19:04:42 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,18 +59,8 @@ char	**parse_map(int fd)
 	return (map);
 }
 
-void	parse_cub_file(t_data *data, const char *file_path)
+void	parse_cub_file_loop(t_data *data, char *line, int fd)
 {
-	int		fd;
-	char	*line;
-
-	fd = open(file_path, O_RDONLY);
-	if (fd == -1)
-	{
-		printf("Error opening file");
-		exit (1);
-	}
-	line = get_next_line(fd);
 	while (line)
 	{
 		if (strncmp(line, "NO ", 3) == 0 || strncmp(line, "SO ", 3) == 0
@@ -83,14 +73,41 @@ void	parse_cub_file(t_data *data, const char *file_path)
 			parse_maps(data, line, fd);
 			if (!is_map_enclosed(data->map))
 			{
-			    fprintf(stderr, "Error: The map is not enclosed by walls.\n");
-			    break ;
+				printf("Error: The map is not enclosed by walls.\n");
+				break ;
 			}
 			break ;
 		}
 		free(line);
 		line = get_next_line(fd);
 	}
+}
+
+void	parse_cub_file(t_data *data, const char *file_path)
+{
+	int		fd;
+	char	*line;
+
+	fd = open(file_path, O_RDONLY);
+	if (fd == -1)
+	{
+		printf("Error opening file");
+		exit (1);
+	}
+	line = get_next_line(fd);
+	if (*line == 32 || *line == 0)
+	{
+		printf("Error reading file");
+		printf("XXXXXXXXXXXXXXXXXXXXXX\n");
+		free(line);
+		mlx_destroy_display(data->mlx);
+		free(data->mlx);
+		free(data->map);
+		//get_next_line(-1);
+		close(fd);
+		exit(1);
+	}
+	parse_cub_file_loop(data, line, fd);
 	close(fd);
 	parse_cub_file_helper(data);
 }

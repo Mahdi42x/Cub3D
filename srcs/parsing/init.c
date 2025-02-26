@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:42:53 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/26 13:26:24 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/26 18:39:58 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,17 @@ void	init_data(t_data *data)
 	data->ceiling_color = 0;
 	data->floor_color = 0;
 	data->map = 0;
+	data->no_path = 0;
+	data->so_path = 0;
+	data->we_path = 0;
+	data->ea_path = 0;
+	data->textures[0].img = NULL;
+	data->textures[1].img = NULL;
+	data->textures[2].img = NULL;
+	data->textures[3].img = NULL;
 	data->weapon_texture.img = NULL;
 	data->many = 0;
+	data->many2 = 0;
 }
 
 void	init_raycasting(t_data *data, int x, t_ray *ray)

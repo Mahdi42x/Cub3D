@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 15:10:54 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/26 13:42:21 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/26 16:21:30 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,9 @@ void	validate_map_characters(char **map, t_data *data)
 				&& c != '1' && c != '0' && c != ' ')
 			{
 				printf("Error: Invalid character '%c' found in map.\n", c);
-				free_textures(data, 1);
-				mlx_destroy_display(data->mlx);
-				free(*map);
-				free(map[y]);
-				free(data->map);
-				free(data->mlx);
+				data->many2 = 13;
 				get_next_line(-1);
-				exit(EXIT_FAILURE);
+				data->map = NULL;
 			}
 			x++;
 		}
@@ -73,8 +68,10 @@ char	**allocate_and_store_line(char **map, char *line, int rows)
 	return (map);
 }
 
+// void	handle_player_loop(char c, t_data *data, int x,)
+
 void	handle_player_spawn(char **map, int rows,
-	int *player_found, t_data *data, char *line) 
+	int *player_found, t_data *data, char *line)
 {
 	int		x;
 	char	c;
@@ -134,6 +131,14 @@ char	**read_map_lines(char *first_map_line, int fd,
 	return (map);
 }
 
+void	parse_map_line_free_map_helper(char **map)
+{
+	free(map[0]);
+	free(map[1]);
+	free(map[2]);
+	free(map);
+}
+
 char	**parse_map_from_line(char *first_map_line,
 		int fd, t_data *data)
 {
@@ -143,33 +148,12 @@ char	**parse_map_from_line(char *first_map_line,
 	player_found = 0;
 	map = read_map_lines(first_map_line, fd, data, &player_found);
 	validate_map_characters(map, data);
-	if (player_found == 0 || (player_found == 2 && data->many == 0))
+	if (player_found == 0 || player_found == 2 || data->many2 == 13)
 	{
-		printf("Error: No player spawn (N, E, S, W) found in the map.\n");
+		if (data->many != 13)
+			printf("Error: No player spawn (N, E, S, W) found in the map.\n");
 		if (map)
-		{
-			free(map[0]);
-			free(map[1]);
-			free(map[2]);
-			free(map);
-		}
-		free_textures(data, 0);
-		mlx_destroy_display(data->mlx);
-		free(data->map);
-		free(data->mlx);
-		free(first_map_line);
-		get_next_line(-1);
-		exit(EXIT_FAILURE);
-	}
-	else if (data->many == 13)
-	{
-		if (map)
-		{
-			free(map[0]);
-			free(map[1]);
-			free(map[2]);
-			free(map);
-		}
+			parse_map_line_free_map_helper(map);
 		free_textures(data, 0);
 		mlx_destroy_display(data->mlx);
 		free(data->map);

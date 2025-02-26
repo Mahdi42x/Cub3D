@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw3.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 15:41:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/21 15:51:14 by mawada           ###   ########.fr       */
+/*   Updated: 2025/02/26 18:37:58 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,23 @@ void	draw_direction(t_img_params *i, int x, int y, t_player *p)
 
 void	print_texture_paths(t_data *d)
 {
-	printf("Texture NO path: %s\\n", d->no_path);
-	printf("Texture SO path: %s\\n", d->so_path);
-	printf("Texture WE path: %s\\n", d->we_path);
-	printf("Texture EA path: %s\\n", d->ea_path);
+	if (d->no_path)
+		printf("Texture NO path: %s\n", d->no_path);
+	if (d->so_path)
+		printf("Texture SO path: %s\n", d->so_path);
+	if (d->we_path)
+		printf("Texture WE path: %s\n", d->we_path);
+	if (d->ea_path)
+		printf("Texture EA path: %s\n", d->ea_path);
+	if (d->no_path == NULL || d->so_path == NULL || d->we_path == NULL || d->ea_path == NULL)
+	{
+		fprintf(stderr, "Error: Missing texture path.\n");
+		free_textures(d, 0);
+		free_maps(d);
+		free(d->map);
+		mlx_destroy_display(d->mlx);
+		free(d->mlx);
+		get_next_line(-1);
+		exit(1);
+	}
 }
