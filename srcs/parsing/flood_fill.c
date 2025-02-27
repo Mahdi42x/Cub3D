@@ -12,36 +12,16 @@
 
 #include "../../include/cub3D.h"
 
-int	has_player(char **map)
-{
-	int	y;
-	int	x;
-
-	if (!map || !map[0])
-		return (0);
-	y = 0;
-	while (map[y])
-	{
-		x = 0;
-		while (map[y][x])
-		{
-			if (map[y][x] == 'N' || map[y][x] == 'E'
-				|| map[y][x] == 'S' || map[y][x] == 'W')
-				return (1);
-			x++;
-		}
-		y++;
-	}
-	return (0);
-}
-
 int	flood_fill(char **map, int x, int y, t_flood *flood)
 {
+	printf("%d || %d\n", x, y);
 	if (x < 0 || y < 0 || x >= flood->cols
 		|| y >= flood->rows || map[y][x] == '1' || flood->visited[y][x])
 		return (0);
-	if (x == 0 || y == 0 || x == flood->cols - 1 || y == flood->rows - 1)
+	if (x <= 0 || y <= 0 || x >= flood->cols - 1 || y >= flood->rows - 1) {
+		printf("Error: Map is not enclosed! Open boundary at (%d, %d)\n", x, y);
 		return (1);
+	}	
 	flood->visited[y][x] = 1;
 	return (flood_fill(map, x + 1, y, flood)
 		|| flood_fill(map, x - 1, y, flood)

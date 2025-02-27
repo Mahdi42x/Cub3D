@@ -38,7 +38,7 @@ void	free_rgb(t_data *data)
 	exit(1);
 }
 
-int	parse_color(char	*str, int i, t_data *data)
+int	parse_color(char *str, int i, t_data *data)
 {
 	int		r;
 	int		g;
@@ -47,22 +47,18 @@ int	parse_color(char	*str, int i, t_data *data)
 	char	*next;
 
 	orig_line = str - 2;
-	(void) i;
+	(void)i;
 	while (*str && isspace(*str))
 		str++;
-	if (!ft_isdigit(*str))
-	{
-		free(orig_line);
-		free_rgb(data);
-		return (-1);
-	}
+	if (!*str || !ft_isdigit(*str))
+		return (free(orig_line), free_rgb(data), -1);
 	r = ft_atoi(str);
 	next = strchr(str, ',');
-	if (!next)
+	if (!next || !ft_isdigit(*(next + 1)))
 		return (free(orig_line), free_rgb(data), -1);
 	g = ft_atoi(next + 1);
 	next = strchr(next + 1, ',');
-	if (!next)
+	if (!next || !ft_isdigit(*(next + 1)))
 		return (free(orig_line), free_rgb(data), -1);
 	b = ft_atoi(next + 1);
 	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)

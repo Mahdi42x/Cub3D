@@ -1,0 +1,24 @@
+NO textures/N_logo.xpm
+SO textures/N_logo.xpm
+WE textures/N_logo.xpm
+EA textures/N_logo.xpm
+
+F 0,0,0
+C 0,0,0
+
+1111111111111111111111111111111111111      
+10000000000E000001000000000000000001111111#
+111111111111111111111100111111111N11              strlen = X
+        1       011111001111			strlen = < X
+                1111100
+                111111001111
+                111111001111
+                111111001111
+                1111110111
+                11111101
+				      1
+
+
+every str starts s[0] with a 1 and ends with a 1\n\0
+str0 only 1s
+strlast   only 1s

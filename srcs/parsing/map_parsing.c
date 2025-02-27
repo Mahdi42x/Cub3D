@@ -61,17 +61,30 @@ char	**parse_map(int fd)
 
 void	parse_cub_file_loop(t_data *data, char *line, int fd)
 {
+	int has_fc;
+
+	has_fc = 0;
 	while (line)
 	{
 		if (strncmp(line, "NO ", 3) == 0 || strncmp(line, "SO ", 3) == 0
 			|| strncmp(line, "WE ", 3) == 0 || strncmp(line, "EA ", 3) == 0)
 			handle_texture(line, data);
 		else if (strncmp(line, "F ", 2) == 0 || strncmp(line, "C ", 2) == 0)
+		{
 			handle_color(line, data);
+			has_fc = 1;
+		}
 		else if (*line == '1' || *line == '0' || *line == ' ')
 		{
+			if (!has_fc)
+			{
+				printf("Error: Missing 'F' or 'C' in configuration.\n");
+				free(line);
+				close(fd);
+				exit(1);
+			}
 			parse_maps(data, line, fd);
-			if (!is_map_enclosed(data->map))
+			if (!is_map_enclosed(data->map, data))
 			{
 				printf("Error: The map is not enclosed by walls.\n");
 				break ;
@@ -98,12 +111,10 @@ void	parse_cub_file(t_data *data, const char *file_path)
 	if (*line == 32 || *line == 0)
 	{
 		printf("Error reading file");
-		printf("XXXXXXXXXXXXXXXXXXXXXX\n");
 		free(line);
 		mlx_destroy_display(data->mlx);
 		free(data->mlx);
 		free(data->map);
-		//get_next_line(-1);
 		close(fd);
 		exit(1);
 	}

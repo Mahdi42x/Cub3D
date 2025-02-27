@@ -65,6 +65,8 @@ void	init_data(t_data *data)
 	data->weapon_texture.img = NULL;
 	data->many = 0;
 	data->many2 = 0;
+	data->x_ff = 0;
+	data->y_ff = 0;
 }
 
 void	init_raycasting(t_data *data, int x, t_ray *ray)

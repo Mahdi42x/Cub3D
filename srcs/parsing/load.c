@@ -48,7 +48,7 @@ void	load_texture(t_data *data, t_texture *texture, char	*line)
 	while (*line && isspace(*line))
 		line++;
 	newline = strchr(line, '\n');
-	printf("Loading texture at path: %s\n", newline);
+	//printf("Loading texture at path: %s\n", newline);
 	if (newline)
 		*newline = '\0';
 	if (*line == '\0' || *line == ' ')

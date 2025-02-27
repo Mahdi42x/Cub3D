@@ -83,7 +83,7 @@ void printMap(char **map)
 
 void	parse_cub_file_helper(t_data *data)
 {
-	printMap(data->map);
+	//printMap(data->map);
 	if (!data->map || !data->map[0])
 	{
 		printf("Error: Map data is missing or empty in");

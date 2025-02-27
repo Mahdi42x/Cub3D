@@ -42,27 +42,29 @@ int	free_x_y_ff(t_data *data)
 	return (0);
 }
 
-int	is_map_enclosed(char **map)
+int	is_map_enclosed(char **map, t_data *data)
 {
-	t_data	data;
-	int		rows;
-	int		cols;
+	int		rows, cols;
 
-	data.x_ff = malloc(sizeof(int));
-	data.y_ff = malloc(sizeof(int));
-	if (!data.x_ff || !data.y_ff)
+	data->x_ff = malloc(sizeof(int));
+	data->y_ff = malloc(sizeof(int));
+	if (!data->x_ff || !data->y_ff)
 		return (0);
 	if (!check_map_validity(map, &rows, &cols))
 		return (0);
-	if (!find_starting_point(map, rows, cols, &data))
-	{
-		free_x_y_ff(&data);
-		return (1);
+	*data->x_ff = (int)data->player.x;
+	*data->y_ff = (int)data->player.y;
+	data->visited = allocate_visited(rows, cols);
+	data->result = flood_fill(map, *data->x_ff, *data->y_ff,
+			&(t_flood){rows, cols, data->visited});
+	if (data->result) {
+		printf("Error: The map is not enclosed!\n");
+		free_visited(data->visited, rows);
+		free_x_y_ff(data);
+		return (0);
 	}
-	data.visited = allocate_visited(rows, cols);
-	data.result = flood_fill(map, *data.x_ff, *data.y_ff,
-			&(t_flood){rows, cols, data.visited});
-	free_visited(data.visited, rows);
-	free_x_y_ff(&data);
-	return (!data.result);
+
+	free_visited(data->visited, rows);
+	free_x_y_ff(data);
+	return (1);
 }

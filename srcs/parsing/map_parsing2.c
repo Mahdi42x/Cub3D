@@ -68,7 +68,6 @@ char	**allocate_and_store_line(char **map, char *line, int rows)
 	return (map);
 }
 
-// void	handle_player_loop(char c, t_data *data, int x,)
 
 void	handle_player_spawn(char **map, int rows,
 	int *player_found, t_data *data, char *line)

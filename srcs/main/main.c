@@ -45,7 +45,7 @@ void	load_map_and_textures(t_data *data, char *filename)
 {
 	init_data(data);
 	parse_cub_file(data, filename);
-	if (!is_map_enclosed(data->map))
+	if (!is_map_enclosed(data->map, data))
 	{
 		fprintf(stderr, "Error: The map is not fully enclosed by walls.\n");
 		free_textures(data, 0);

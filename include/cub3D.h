@@ -207,6 +207,8 @@ typedef struct s_data {
 
 	int					many;
 	int					many2;
+	int					playerposx;
+	int					playerposy;
 }	t_data;
 
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
@@ -231,10 +233,9 @@ void	test_all_textures(t_data *data);
 
 /*		 						 Fload fill				 					*/
 int		has_player(char **map);
-int		is_map_enclosed(char **map);
+int		is_map_enclosed(char **map, t_data *data);
 int		flood_fill(char **map, int x, int y, t_flood *flood);
 int		check_map_validity(char **map, int *rows, int *cols);
-int		flood_fill(char **map, int x, int y, t_flood *flood);
 void	free_visited(char **visited, int rows);
 char	**allocate_visited(int rows, int cols);
 
