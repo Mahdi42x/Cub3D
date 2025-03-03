@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   map_parsing2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
+/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 15:10:54 by mawada            #+#    #+#             */
-/*   Updated: 2025/03/03 17:36:52 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 19:56:38 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3D.h"
-
 
 void	validate_map_characters(char **map, t_data *data)
 {
@@ -69,23 +68,20 @@ char	**allocate_and_store_line(char **map, char *line, int rows)
 	return (map);
 }
 
-
 void	handle_player_spawn(char **map, int rows,
-	int *player_found, t_data *data, char *line)
+	int *player_found, t_data *data)
 {
 	int		x;
-	char	c;
 
 	x = 0;
 	while (map[rows][x])
 	{
-		c = map[rows][x];
-		if (c == 'N' || c == 'S' || c == 'E' || c == 'W')
+		if (map[rows][x] == 'N' || map[rows][x] == 'S'
+			|| map[rows][x] == 'E' || map[rows][x] == 'W')
 		{
 			if (*player_found)
 			{
-				printf("Error: Too many spawns.\n");
-				free(line);
+				free(data->line);
 				*player_found = 2;
 				data->many = 13;
 				get_next_line(-1);
@@ -93,7 +89,7 @@ void	handle_player_spawn(char **map, int rows,
 			}
 			data->player.x = x + 0.5;
 			data->player.y = rows + 0.5;
-			set_player_orientation(c, &data->player);
+			set_player_orientation(map[rows][x], &data->player);
 			*player_found = 1;
 			map[rows][x] = '0';
 		}
@@ -105,28 +101,27 @@ char	**read_map_lines(char *first_map_line, int fd,
 	t_data *data, int *player_found)
 {
 	char	**map;
-	char	*line;
 	int		rows;
 	int		len;
 
 	map = NULL;
-	line = first_map_line;
+	data->line = first_map_line;
 	rows = 0;
-	while (line != NULL)
+	while (data->line != NULL)
 	{
-		len = strlen(line);
-		if (len > 0 && line[len - 1] == '\n')
-			line[len - 1] = '\0';
-		map = allocate_and_store_line(map, line, rows);
+		len = strlen(data->line);
+		if (len > 0 && data->line[len - 1] == '\n')
+			data->line[len - 1] = '\0';
+		map = allocate_and_store_line(map, data->line, rows);
 		if (!map)
 			get_next_line(-1);
-		handle_player_spawn(map, rows, player_found, data, line);
+		handle_player_spawn(map, rows, player_found, data);
 		rows++;
 		map[rows] = NULL;
 		data->temp_line = get_next_line(fd);
-		if (line != first_map_line && *player_found != 2)
-			free(line);
-		line = data->temp_line;
+		if (data->line != first_map_line && *player_found != 2)
+			free(data->line);
+		data->line = data->temp_line;
 	}
 	return (map);
 }

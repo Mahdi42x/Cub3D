@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
+/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/03/03 17:26:26 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 19:55:31 by emkalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,7 @@ typedef struct s_data {
 	int					many2;
 	int					playerposx;
 	int					playerposy;
-	int					*playerfound;
+	char				*line;
 }	t_data;
 
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
@@ -246,6 +246,7 @@ int		parse_color(char	*str, int i, t_data *data);
 void	test_texture_loading(void *mlx, char *path, const char *label);
 void	test_all_textures(t_data *data);
 void	set_map_width(t_data *data);
+void	handle_multiple_spawns(int *player_found, t_data *data, char c, int x, int rows);
 
 /*		 						 Fload fill				 					*/
 int		has_player(char **map);
