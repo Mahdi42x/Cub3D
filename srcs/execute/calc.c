@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   calc.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mawada <mawada@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 15:49:31 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/21 15:02:38 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 12:16:12 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ void	compute_texture_coordinates(t_data *data, t_ray *ray)
 	tex = &data->textures[ray->tex_num];
 	if (!tex->addr)
 	{
-		fprintf(stderr, "Error: Invalid texture %d\\n", ray->tex_num);
-		fprintf(stderr, "Address for texture %d\\n", ray->tex_num);
+		printf("Error: Invalid texture %d\\n", ray->tex_num);
+		printf("Address for texture %d\\n", ray->tex_num);
 		free(ray);
 	}
 	if (ray->side == 0)

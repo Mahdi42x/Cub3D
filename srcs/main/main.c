@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 15:56:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/26 18:32:28 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 16:06:31 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	check_args_and_init(int argc, char *argv[], int *fd, t_data *data)
 	data->mlx = mlx_init();
 	if (!data->mlx)
 	{
-		fprintf(stderr, "Error: Failed to initialize MiniLibX.\n");
+		printf("Error: Failed to initialize MiniLibX.\n");
 		free_maps(data);
 		free(data->map);
 		free_textures(data, 1);
@@ -47,13 +47,11 @@ void	load_map_and_textures(t_data *data, char *filename)
 	parse_cub_file(data, filename);
 	if (!is_map_enclosed(data->map, data))
 	{
-		fprintf(stderr, "Error: The map is not fully enclosed by walls.\n");
-		free_textures(data, 0);
 		free_maps(data);
 		free(data->map);
+		free_textures(data, 1);
 		mlx_destroy_display(data->mlx);
 		free(data->mlx);
-		get_next_line(-1);
 		exit(1);
 	}
 	print_texture_paths(data);
@@ -66,7 +64,7 @@ void	setup_window_and_hooks(t_data *data)
 	data->win = mlx_new_window(data->mlx, WINDOW_WIDTH, WINDOW_HEIGHT, "cub3D");
 	if (!data->win)
 	{
-		fprintf(stderr, "Error: Failed to create a window.\n");
+		printf("Error: Failed to create a window.\n");
 		free_maps(data);
 		free(data->map);
 		free_textures(data, 1);

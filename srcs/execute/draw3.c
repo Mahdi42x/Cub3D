@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 15:41:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/26 18:37:58 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 15:04:55 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,10 @@ void	print_texture_paths(t_data *d)
 		printf("Texture WE path: %s\n", d->we_path);
 	if (d->ea_path)
 		printf("Texture EA path: %s\n", d->ea_path);
-	if (d->no_path == NULL || d->so_path == NULL || d->we_path == NULL || d->ea_path == NULL)
+	if (d->no_path == NULL || d->so_path == NULL
+		|| d->we_path == NULL || d->ea_path == NULL)
 	{
-		fprintf(stderr, "Error: Missing texture path.\n");
+		printf("Error: Missing texture path.\n");
 		free_textures(d, 0);
 		free_maps(d);
 		free(d->map);

@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:04:34 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/26 14:37:24 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 17:26:26 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include <string.h>
+# include <stdbool.h>
 
 # define M_PI 3.14159265358979323846
 # define WINDOW_WIDTH 1200
@@ -159,6 +160,12 @@ typedef struct s_line_params {
 	int	color;
 }		t_line_params;
 
+typedef struct s_map_info {
+    char **map;
+    int rows;
+    char *line;
+} t_map_info;
+
 typedef struct s_cross_params {
 	int		w;
 	int		h;
@@ -169,9 +176,11 @@ typedef struct s_data {
 	t_texture			weapon_texture;
 	t_player			player;
 	t_texture			textures[4];
+	t_map_info			map_info;
 	void				*mlx;
 	void				*win;
 	char				**map;
+	char				**copymap;
 	char				*no_path;
 	char				*so_path;
 	char				*we_path;
@@ -209,6 +218,7 @@ typedef struct s_data {
 	int					many2;
 	int					playerposx;
 	int					playerposy;
+	int					*playerfound;
 }	t_data;
 
 /*/++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\*/
@@ -217,19 +227,25 @@ typedef struct s_data {
 char	**parse_map(int fd);
 char	**parse_map_from_line(char *first_map_line, int fd, t_data *data);
 void	find_player(char **map, t_player *player);
-
+char	**parse_map_from_line(char *first_map_line, int fd, t_data *data);
 void	handle_texture(char *line, t_data *data);
 void	handle_color(char *line, t_data *data);
 void	parse_maps(t_data *data, char *line, int fd);
 char	**parse_map_from_line(char *first_map_line, int fd, t_data *data);
-
+char	**read_map_lines(char *first_map_line, int fd, t_data *data, int *player_found);
+void	validate_map_characters(char **map, t_data *data);
+void	parse_map_line_free_map_helper(char **map);
 /*		 						 File Parsing				 				*/
+void	handle_line(t_data *data, char *line, int *has_fc);
+int		process_map_part(t_data *data, char *line, int fd, int has_fc);
+void	parse_cub_file_loop(t_data *data, char *line, int fd);
 void	parse_cub_file(t_data *data, const char *file_path);
 void	parse_cub_file_helper(t_data *data);
 int		is_cub_file(char *file_path);
 int		parse_color(char	*str, int i, t_data *data);
 void	test_texture_loading(void *mlx, char *path, const char *label);
 void	test_all_textures(t_data *data);
+void	set_map_width(t_data *data);
 
 /*		 						 Fload fill				 					*/
 int		has_player(char **map);

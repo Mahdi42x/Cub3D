@@ -6,13 +6,13 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:35:41 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/26 18:28:13 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 16:40:06 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3D.h"
 
-void	handle_texture(char *line, t_data *data)
+void	handle_texture_cases(t_data *data, char *line)
 {
 	if (strncmp(line, "NO ", 3) == 0)
 	{
@@ -34,6 +34,21 @@ void	handle_texture(char *line, t_data *data)
 		data->ea_path = ft_strtrim(line + 3, " \n\t");
 		load_texture(data, &data->textures[0], line + 3);
 	}
+}
+
+void	handle_texture(char *line, t_data *data)
+{
+	if (line[3] == '\0' || isspace(line[3])) 
+	{
+		printf("Failed to load texture at pathf1f1: %s\n", line);
+		free(line);
+		free_textures(data, 0);
+		mlx_destroy_display(data->mlx);
+		free(data->mlx);
+		get_next_line(-1);
+		exit(EXIT_FAILURE);
+	}
+	handle_texture_cases(data, line);
 }
 
 void	handle_color(char *line, t_data *data)
@@ -64,42 +79,4 @@ void	set_map_width(t_data *data)
 			data->map_width = len;
 		i++;
 	}
-}
-
-void printMap(char **map)
-{
-	if (!map) return;
-	size_t i = 0;
-	while (map[i] != NULL) {
-		size_t j = 0;
-		while (map[i][j] != '\0') {
-			write(1, &map[i][j], 1); // Zeichenweise ausgeben
-			++j;
-		}
-		write(1, "\n", 1); // Neue Zeile
-		++i;
-	}
-}
-
-void	parse_cub_file_helper(t_data *data)
-{
-	//printMap(data->map);
-	if (!data->map || !data->map[0])
-	{
-		printf("Error: Map data is missing or empty in");
-		printf(" the .cub file.\n");
-		mlx_destroy_image(data->mlx, data->textures[0].img);
-		mlx_destroy_image(data->mlx, data->textures[1].img);
-		mlx_destroy_image(data->mlx, data->textures[2].img);
-		mlx_destroy_image(data->mlx, data->textures[3].img);
-		free(data->no_path);
-		free(data->so_path);
-		free(data->we_path);
-		free(data->ea_path);
-		mlx_destroy_display(data->mlx);
-		free(data->mlx);
-		free(data->map);
-		exit(1);
-	}
-	set_map_width(data);
 }

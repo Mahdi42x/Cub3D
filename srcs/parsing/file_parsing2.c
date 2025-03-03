@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 14:21:18 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/26 18:36:07 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 16:41:16 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	is_cub_file(char *file_path)
 
 void	free_rgb(t_data *data)
 {
-	fprintf(stderr, "Error: Invalid RGB value in .cub file.\n");
+	printf("Error: Invalid RGB value in .cub file.\n");
 	free(data->map);
 	free_textures(data, 0);
 	free_maps(data);
@@ -76,8 +76,7 @@ void	test_texture_loading(void	*mlx, char	*path, const char	*label)
 	if (!img)
 	{
 		perror("System Error");
-		fprintf(stderr,
-			"MiniLibX Error: Cannot load texture for %s at tesst path: %s\n",
+		printf("MiniLibX Error: Cannot load texture for %s at tesst path: %s\n",
 			label, path);
 		exit(EXIT_FAILURE);
 	}
@@ -95,16 +94,4 @@ void	test_all_textures(t_data *data)
 		test_texture_loading(data->mlx, data->we_path, "WE");
 	if (data->ea_path)
 		test_texture_loading(data->mlx, data->ea_path, "EA");
-	// if (data->no_path == NULL || data->so_path == NULL
-	// 	|| data->we_path == NULL || data->ea_path == NULL)
-	// {
-	// 	printf("Error: Missing texture path.\n");
-	// 	free_textures(data, 0);
-	// 	free_maps(data);
-	// 	free(data->map);
-	// 	mlx_destroy_display(data->mlx);
-	// 	free(data->mlx);
-	// 	get_next_line(-1);
-	// 	exit(1);
-	// }
 }

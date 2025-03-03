@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:41:16 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/26 19:09:56 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 15:06:15 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ void	load_weapon_texture(t_data *data, char *path)
 	if (!data->weapon_texture.img)
 	{
 		perror("System Error");
-		fprintf(stderr, "MiniLibX Error: Failed to load ");
-		fprintf(stderr, "weapon texture at path: %s\n", path);
+		printf("MiniLibX Error: Failed to load ");
+		printf("weapon texture at path: %s\n", path);
 		exit(EXIT_FAILURE);
 	}
 	data->weapon_texture.addr = mlx_get_data_addr(
@@ -48,21 +48,10 @@ void	load_texture(t_data *data, t_texture *texture, char	*line)
 	while (*line && isspace(*line))
 		line++;
 	newline = strchr(line, '\n');
-	//printf("Loading texture at path: %s\n", newline);
 	if (newline)
 		*newline = '\0';
 	if (*line == '\0' || *line == ' ')
 	{
-		if (line[3] != ' ')
-		{
-			printf("Failed to load texture at path: %s\n", line);
-			free_textures(data, 0);
-			// free(line - 1);
-			mlx_destroy_display(data->mlx);
-			free(data->mlx);
-			get_next_line(-1);
-			exit(EXIT_FAILURE);
-		}
 		printf("Error: Missing texture.\n");
 		free(line - 3);
 		get_next_line(-1);

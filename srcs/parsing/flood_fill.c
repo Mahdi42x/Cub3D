@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:33:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/24 19:00:19 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 16:08:40 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 int	flood_fill(char **map, int x, int y, t_flood *flood)
 {
-	printf("%d || %d\n", x, y);
+	if (x < 0 || y < 0 || x >= flood->cols - 1 || y >= flood->rows - 1)
+	{
+		printf("Error: Map is not enclosed! Open boundary at (%d, %d)\n", x, y);
+		return (1);
+	}
 	if (x < 0 || y < 0 || x >= flood->cols
 		|| y >= flood->rows || map[y][x] == '1' || flood->visited[y][x])
 		return (0);
-	if (x <= 0 || y <= 0 || x >= flood->cols - 1 || y >= flood->rows - 1) {
-		printf("Error: Map is not enclosed! Open boundary at (%d, %d)\n", x, y);
-		return (1);
-	}	
 	flood->visited[y][x] = 1;
 	return (flood_fill(map, x + 1, y, flood)
 		|| flood_fill(map, x - 1, y, flood)

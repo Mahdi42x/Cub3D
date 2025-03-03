@@ -6,6 +6,20 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:18:31 by mawada            #+#    #+#             */
+/*   Updated: 2025/03/03 17:36:10 by mawada           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../include/cub3D.h"
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map_parsing.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/02 17:18:31 by mawada            #+#    #+#             */
 /*   Updated: 2025/02/26 19:04:42 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -57,43 +71,6 @@ char	**parse_map(int fd)
 		free(line);
 	}
 	return (map);
-}
-
-void	parse_cub_file_loop(t_data *data, char *line, int fd)
-{
-	int has_fc;
-
-	has_fc = 0;
-	while (line)
-	{
-		if (strncmp(line, "NO ", 3) == 0 || strncmp(line, "SO ", 3) == 0
-			|| strncmp(line, "WE ", 3) == 0 || strncmp(line, "EA ", 3) == 0)
-			handle_texture(line, data);
-		else if (strncmp(line, "F ", 2) == 0 || strncmp(line, "C ", 2) == 0)
-		{
-			handle_color(line, data);
-			has_fc = 1;
-		}
-		else if (*line == '1' || *line == '0' || *line == ' ')
-		{
-			if (!has_fc)
-			{
-				printf("Error: Missing 'F' or 'C' in configuration.\n");
-				free(line);
-				close(fd);
-				exit(1);
-			}
-			parse_maps(data, line, fd);
-			if (!is_map_enclosed(data->map, data))
-			{
-				printf("Error: The map is not enclosed by walls.\n");
-				break ;
-			}
-			break ;
-		}
-		free(line);
-		line = get_next_line(fd);
-	}
 }
 
 void	parse_cub_file(t_data *data, const char *file_path)

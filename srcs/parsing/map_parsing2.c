@@ -6,11 +6,12 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 15:10:54 by mawada            #+#    #+#             */
-/*   Updated: 2025/02/26 16:21:30 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 17:36:52 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3D.h"
+
 
 void	validate_map_characters(char **map, t_data *data)
 {
@@ -136,30 +137,4 @@ void	parse_map_line_free_map_helper(char **map)
 	free(map[1]);
 	free(map[2]);
 	free(map);
-}
-
-char	**parse_map_from_line(char *first_map_line,
-		int fd, t_data *data)
-{
-	int		player_found;
-	char	**map;
-
-	player_found = 0;
-	map = read_map_lines(first_map_line, fd, data, &player_found);
-	validate_map_characters(map, data);
-	if (player_found == 0 || player_found == 2 || data->many2 == 13)
-	{
-		if (data->many != 13)
-			printf("Error: No player spawn (N, E, S, W) found in the map.\n");
-		if (map)
-			parse_map_line_free_map_helper(map);
-		free_textures(data, 0);
-		mlx_destroy_display(data->mlx);
-		free(data->map);
-		free(data->mlx);
-		free(first_map_line);
-		get_next_line(-1);
-		exit(EXIT_FAILURE);
-	}
-	return (map);
 }

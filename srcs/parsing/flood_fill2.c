@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 18:30:24 by emkalkan          #+#    #+#             */
-/*   Updated: 2025/02/26 14:39:19 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/03 15:05:54 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ int	free_x_y_ff(t_data *data)
 
 int	is_map_enclosed(char **map, t_data *data)
 {
-	int		rows, cols;
+	int		rows;
+	int		cols;
 
 	data->x_ff = malloc(sizeof(int));
 	data->y_ff = malloc(sizeof(int));
@@ -57,13 +58,13 @@ int	is_map_enclosed(char **map, t_data *data)
 	data->visited = allocate_visited(rows, cols);
 	data->result = flood_fill(map, *data->x_ff, *data->y_ff,
 			&(t_flood){rows, cols, data->visited});
-	if (data->result) {
+	if (data->result)
+	{
 		printf("Error: The map is not enclosed!\n");
 		free_visited(data->visited, rows);
 		free_x_y_ff(data);
 		return (0);
 	}
-
 	free_visited(data->visited, rows);
 	free_x_y_ff(data);
 	return (1);
