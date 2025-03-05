@@ -6,7 +6,7 @@
 /*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 15:56:36 by mawada            #+#    #+#             */
-/*   Updated: 2025/03/03 16:06:31 by mawada           ###   ########.fr       */
+/*   Updated: 2025/03/05 11:48:10 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,6 @@ void	check_args_and_init(int argc, char *argv[], int *fd, t_data *data)
 	if (*fd == -1)
 	{
 		perror("Error opening file");
-		free_maps(data);
-		free(data->map);
-		free_textures(data, 1);
-		exit_game(data);
 		exit(1);
 	}
 	data->mlx = mlx_init();

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   file_parsing.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emkalkan <emkalkan@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: mawada <mawada@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 17:35:41 by mawada            #+#    #+#             */
-/*   Updated: 2025/03/03 18:57:49 by emkalkan         ###   ########.fr       */
+/*   Updated: 2025/03/05 11:54:31 by mawada           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	handle_texture(char *line, t_data *data)
 {
 	if (line[3] == '\0' || isspace(line[3])) 
 	{
-		printf("Failed to load texture at pathf1f1: %s\n", line);
+		printf("Failed to load texture at path: %s\n", line);
 		free(line);
 		free_textures(data, 0);
 		mlx_destroy_display(data->mlx);
